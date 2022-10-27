@@ -8,24 +8,43 @@
     tools:context=".MainActivity">
 
 
-    <LinearLayout
+    <com.google.ar.sceneform.SceneView
+        android:id="@+id/arFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
+        android:background="@color/design_default_color_primary"
+        app:layout_constraintBottom_toTopOf="@+id/centerbtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <com.google.ar.sceneform.SceneView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="#000000"
-            android:id="@+id/backgroundSceneView"
-            android:layout_gravity="center_vertical"/>
+    <Button
+        android:id="@+id/leftbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Left"
+        app:layout_constraintBottom_toBottomOf="@+id/centerbtn"
+        app:layout_constraintEnd_toStartOf="@+id/centerbtn"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    </LinearLayout>
+    <Button
+        android:id="@+id/centerbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="Center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/rightbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Right"
+        app:layout_constraintBottom_toBottomOf="@+id/centerbtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/centerbtn" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
