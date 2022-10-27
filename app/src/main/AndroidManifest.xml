@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="danielryansunjaya.finalyearproject.eventhotspot">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Always needed for AR. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Needed to load gltf from network. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Sceneform requires OpenGLES 3.0 or later. -->
+    <uses-feature
+        android:glEsVersion="0x00030000"
+        android:required="true" />
+
+    <!-- Indicates that this app requires Google Play Services for AR ("AR Required") and results in
+         the app only being visible in the Google Play Store on devices that support ARCore.
+         For an "AR Optional" app, remove this tag. -->
+    <uses-feature
+        android:name="android.hardware.camera.ar"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -22,6 +39,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data android:name="com.google.ar.core" android:value="required" />
     </application>
 
 </manifest>
