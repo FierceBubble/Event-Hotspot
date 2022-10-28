@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.filament.utils.Utils;
@@ -26,16 +27,17 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
+    private static final float INFO_CARD_Y_POS = 0.55f;
     private SceneView sceneView;
     private Scene scene;
-    private ModelRenderable blockA_renderable;
-    private ModelRenderable blockB_renderable;
-    private ModelRenderable blockC_renderable;
-    private ModelRenderable blockD_renderable;
-    private ModelRenderable blockG_renderable;
-    private ViewRenderable viewRenderable;
+    ModelRenderable blockA_renderable;
+    ModelRenderable blockB_renderable;
+    ModelRenderable blockC_renderable;
+    ModelRenderable blockD_renderable;
+    ModelRenderable blockG_renderable;
+    ViewRenderable viewRenderable;
     private TransformableNode university;
     private TransformationSystem transformationSystem;
 
@@ -81,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
     public void loadModels(){
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
 
+        // Runs CompleteableFuture to Render 3D models of the University
+        // Prevents multiple buildings not rendered onto the screen
         CompletableFuture.allOf(blockA_stage, blockB_stage, blockC_stage,
                         blockD_stage, blockG_stage)
                 .handle((notUsed, throwable)->{
@@ -123,6 +127,9 @@ public class MainActivity extends AppCompatActivity {
                                     addOtherNodetoUniversity("Block G",model);
 
                                 });
+
+                        Log.d("MainActivity", "Model Successfully Placed on Screen!");
+
                     } catch (ExecutionException e) {
                         e.printStackTrace();
                     } catch (InterruptedException e) {
@@ -133,25 +140,56 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private  void addOtherBuilding(String name, CompletableFuture<ModelRenderable> modelPlace, ModelRenderable modelRenderable, MainActivity activity){
-        modelPlace.thenAccept(model -> {
-                     blockC_renderable= model;
-                    addOtherNodetoUniversity(name,model);
-
-                })
-                .exceptionally(throwable -> {
-                    Toast.makeText(
-                            this, "Unable to load model G", Toast.LENGTH_LONG).show();
-                    return null;
-                });
-    }
-
     private void addOtherNodetoUniversity(String name, ModelRenderable modelRenderable){
         Node otherBuilding = new Node();
         otherBuilding.setParent(university);
         otherBuilding.setRenderable(modelRenderable);
         otherBuilding.setName(name);
+        otherBuilding.setOnTapListener(new Node.OnTapListener() {
+            @Override
+            public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
+                nodeTap(name, otherBuilding);
+            }
+        });
         university.addChild(otherBuilding);
+
+        /*Building building = new Building(name, 0, modelRenderable, this);
+        building.setParent(otherBuilding);*/
+    }
+
+    private void nodeTap(String name, Node parent) {
+        WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
+        Toast.makeText(this,"Node "+name+" Tap!",Toast.LENGTH_LONG).show();
+
+        ViewRenderable.builder()
+                .setView(this, R.layout.building_options)
+                .build()
+                .thenAccept(
+                        (viewRenderable) -> {
+                            MainActivity activity = weakActivity.get();
+                            if(activity!=null){
+                                TextView building_name = (TextView) viewRenderable.getView().findViewById(R.id.infoCard_text);
+                                building_name.setText(name);
+                                activity.viewRenderable = viewRenderable;
+                                make_infoCard(name, parent, viewRenderable);
+                            }
+
+                        })
+                .exceptionally(
+                        (throwable) -> {
+                            throw new AssertionError("Could not load plane card view.", throwable);
+                        });
+    }
+
+    private void make_infoCard(String name, Node parent, ViewRenderable viewRenderable){
+        Node infoCard = new Node();
+        infoCard.setRenderable(viewRenderable);
+        infoCard.setEnabled(true);
+        infoCard.setParent(parent);
+        infoCard.setName("InfoCard: "+name);
+        infoCard.setLocalPosition(new Vector3(0.0f, INFO_CARD_Y_POS, 0.0f));
+        Log.d("make_infoCard", "InfoCard "+name+" successfully created!");
+
     }
 
     private void addNodeToScene(ModelRenderable model) {
@@ -196,4 +234,5 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         sceneView.pause();
     }
+
 }

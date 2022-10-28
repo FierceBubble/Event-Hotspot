@@ -11,10 +11,10 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 
 public class Building extends Node implements Node.OnTapListener{
-    private final String name;
-    private final float scale;
-    private final ModelRenderable modelRenderable;
-    private final Context context;
+    final String name;
+    final float scale;
+    final ModelRenderable modelRenderable;
+    final Context context;
 
     private Node infoCard;
     private static final float INFO_CARD_Y_POS = 0.55f;
@@ -39,7 +39,7 @@ public class Building extends Node implements Node.OnTapListener{
             infoCard.setLocalPosition(new Vector3(0.0f, scale * INFO_CARD_Y_POS, 0.0f));
 
             ViewRenderable.builder()
-                    .setView(context, R.layout.building_detail_cardview)
+                    .setView(context, R.layout.building_options)
                     .build()
                     .thenAccept(
                             (modelRenderable) -> {
