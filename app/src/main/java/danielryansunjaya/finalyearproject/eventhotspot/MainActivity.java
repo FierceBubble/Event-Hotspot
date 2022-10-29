@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +31,6 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity{
 
-    private static final float INFO_CARD_Y_POS = 0.55f;
     private SceneView sceneView;
     private Scene scene;
     ModelRenderable blockA_renderable;
@@ -130,9 +131,7 @@ public class MainActivity extends AppCompatActivity{
 
                         Log.d("MainActivity", "Model Successfully Placed on Screen!");
 
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
+                    } catch (ExecutionException | InterruptedException e) {
                         e.printStackTrace();
                     }
                     return null;
@@ -153,8 +152,6 @@ public class MainActivity extends AppCompatActivity{
         });
         university.addChild(otherBuilding);
 
-        /*Building building = new Building(name, 0, modelRenderable, this);
-        building.setParent(otherBuilding);*/
     }
 
     private void nodeTap(String name, Node parent) {
@@ -169,6 +166,13 @@ public class MainActivity extends AppCompatActivity{
                             MainActivity activity = weakActivity.get();
                             if(activity!=null){
                                 TextView building_name = (TextView) viewRenderable.getView().findViewById(R.id.infoCard_text);
+                                Button button = (Button) viewRenderable.getView().findViewById(R.id.infoCard_btn);
+                                button.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        buttonCLick(name);
+                                    }
+                                });
                                 building_name.setText(name);
                                 activity.viewRenderable = viewRenderable;
                                 make_infoCard(name, parent, viewRenderable);
@@ -181,13 +185,35 @@ public class MainActivity extends AppCompatActivity{
                         });
     }
 
+    private void buttonCLick(String name) {
+        Toast.makeText(this,"Button "+name+" Clicked!",Toast.LENGTH_LONG).show();
+    }
+
     private void make_infoCard(String name, Node parent, ViewRenderable viewRenderable){
         Node infoCard = new Node();
         infoCard.setRenderable(viewRenderable);
         infoCard.setEnabled(true);
         infoCard.setParent(parent);
         infoCard.setName("InfoCard: "+name);
-        infoCard.setLocalPosition(new Vector3(0.0f, INFO_CARD_Y_POS, 0.0f));
+        infoCard.setLocalScale(new Vector3(0.3f,0.3f,0.3f));
+        switch (name){
+            case "Block A":
+                infoCard.setLocalPosition(new Vector3(0.0f, 0.3f, 3f));
+                break;
+            case "Block B":
+                infoCard.setLocalPosition(new Vector3(0.2f, 0.25f, -0.2f));
+                break;
+            case "Block C":
+                infoCard.setLocalPosition(new Vector3(0.3f, 0.45f, 0.3f));
+                break;
+            case "Block D":
+                infoCard.setLocalPosition(new Vector3(0.3f, 0.4f, 0.75f));
+                break;
+            case "Block G":
+                infoCard.setLocalPosition(new Vector3(-0.4f, 0.65f, 0.5f));
+                break;
+        }
+
         Log.d("make_infoCard", "InfoCard "+name+" successfully created!");
 
     }
@@ -209,14 +235,6 @@ public class MainActivity extends AppCompatActivity{
         university.setLocalPosition(new Vector3(-0.03f, 0f, -1.0f));
         transformationSystem.selectNode(university);
         scene.addChild(university);
-    }
-
-    private Node createBuilding(String name, Node parent, ModelRenderable modelRenderable, float scale){
-        Building building = new Building(name, scale, modelRenderable, this);
-        building.setParent(parent);
-        building.setLocalPosition(new Vector3(0,0,0));
-
-        return building;
     }
 
     @Override
