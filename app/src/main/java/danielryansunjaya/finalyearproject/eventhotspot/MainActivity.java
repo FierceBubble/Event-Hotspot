@@ -1,5 +1,6 @@
 package danielryansunjaya.finalyearproject.eventhotspot;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.net.Uri;
@@ -12,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.filament.utils.Utils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
@@ -24,6 +27,9 @@ import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.FootprintSelectionVisualizer;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CompletableFuture;
@@ -31,8 +37,11 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity{
 
+    private FirebaseFirestore db;
+
     private SceneView sceneView;
     private Scene scene;
+    //ModelRenderable base_renderable;
     ModelRenderable blockA_renderable;
     ModelRenderable blockB_renderable;
     ModelRenderable blockC_renderable;
@@ -42,16 +51,21 @@ public class MainActivity extends AppCompatActivity{
     private TransformableNode university;
     private TransformationSystem transformationSystem;
 
+    //CompletableFuture<ModelRenderable> base_stage;
     CompletableFuture<ModelRenderable> blockA_stage;
     CompletableFuture<ModelRenderable> blockB_stage;
     CompletableFuture<ModelRenderable> blockC_stage;
     CompletableFuture<ModelRenderable> blockD_stage;
     CompletableFuture<ModelRenderable> blockG_stage;
 
+    public int totalEvent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+       db = FirebaseFirestore.getInstance();
 
         transformationSystem = new TransformationSystem(getResources().getDisplayMetrics(),new FootprintSelectionVisualizer());
         sceneView = findViewById(R.id.arFragment);
@@ -70,6 +84,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void initModels() {
+        //base_stage = ModelRenderable.builder().build();
         blockA_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/a.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
         blockB_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/b.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
         blockC_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/c.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
@@ -104,30 +119,36 @@ public class MainActivity extends AppCompatActivity{
                                 addNodeToScene(model);
                             }
                         });
+                        /*blockA_renderable = blockA_stage.get();
+                        blockA_stage.thenAccept(model -> {
+                            blockA_renderable = model;
+                            addOtherNodetoUniversity("Block A",model);
+
+                        });*/
                         blockB_renderable = blockB_stage.get();
                         blockB_stage.thenAccept(model -> {
-                                    blockB_renderable = model;
-                                    addOtherNodetoUniversity("Block B",model);
+                            blockB_renderable = model;
+                            addOtherNodetoUniversity("Block B",model);
 
-                                });
+                        });
                         blockC_renderable = blockC_stage.get();
                         blockC_stage.thenAccept(model -> {
-                                    blockC_renderable = model;
-                                    addOtherNodetoUniversity("Block C",model);
+                            blockC_renderable = model;
+                            addOtherNodetoUniversity("Block C",model);
 
-                                });
+                        });
                         blockD_renderable = blockD_stage.get();
                         blockD_stage.thenAccept(model -> {
-                                    blockD_renderable = model;
-                                    addOtherNodetoUniversity("Block D",model);
+                            blockD_renderable = model;
+                            addOtherNodetoUniversity("Block D",model);
 
-                                });
+                        });
                         blockG_renderable = blockG_stage.get();
                         blockG_stage.thenAccept(model -> {
-                                    blockG_renderable = model;
-                                    addOtherNodetoUniversity("Block G",model);
+                            blockG_renderable = model;
+                            addOtherNodetoUniversity("Block G",model);
 
-                                });
+                        });
 
                         Log.d("MainActivity", "Model Successfully Placed on Screen!");
 
@@ -156,7 +177,9 @@ public class MainActivity extends AppCompatActivity{
 
     private void nodeTap(String name, Node parent) {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
-        Toast.makeText(this,"Node "+name+" Tap!",Toast.LENGTH_LONG).show();
+        String nameTrim = name.replace("Block","").trim();
+        Toast.makeText(this,"Node "+nameTrim+" Tap!",Toast.LENGTH_LONG).show();
+        totalEvent = 0;
 
         ViewRenderable.builder()
                 .setView(this, R.layout.building_options)
@@ -173,7 +196,24 @@ public class MainActivity extends AppCompatActivity{
                                         buttonCLick(name);
                                     }
                                 });
-                                building_name.setText(name);
+
+                                db.collection("eventList")
+                                        .whereEqualTo("location", nameTrim)
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if (task.isSuccessful()){
+                                                    for(QueryDocumentSnapshot documentSnapshot : task.getResult()){
+                                                        totalEvent+=1;
+                                                    }
+                                                    building_name.setText(name+" - Event Total: "+totalEvent);
+                                                }else{
+                                                    Log.w("FirebaseStore_RetrieveData", "Error getting documents.", task.getException());
+                                                }
+                                            }
+                                        });
+
                                 activity.viewRenderable = viewRenderable;
                                 make_infoCard(name, parent, viewRenderable);
                             }
@@ -183,6 +223,8 @@ public class MainActivity extends AppCompatActivity{
                         (throwable) -> {
                             throw new AssertionError("Could not load plane card view.", throwable);
                         });
+
+
     }
 
     private void buttonCLick(String name) {

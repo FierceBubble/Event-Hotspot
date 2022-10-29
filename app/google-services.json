@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "390712058331",
+    "project_id": "event-hotspot",
+    "storage_bucket": "event-hotspot.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390712058331:android:2197d2534ebe8fd68507fe",
+        "android_client_info": {
+          "package_name": "danielryansunjaya.finalyearproject.eventhotspot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "390712058331-v14m7t250kmdnmq72abms7sgbl51209f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAN6rEkThWDq0o9tYIvDuiG-MPPdSiKqgw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "390712058331-v14m7t250kmdnmq72abms7sgbl51209f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
