@@ -1,13 +1,16 @@
 package danielryansunjaya.finalyearproject.eventhotspot;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.ObjectAnimator;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +23,7 @@ import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.SceneView;
 import com.google.ar.sceneform.math.Quaternion;
+import com.google.ar.sceneform.math.QuaternionEvaluator;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
@@ -41,17 +45,19 @@ public class MainActivity extends AppCompatActivity{
 
     private SceneView sceneView;
     private Scene scene;
-    //ModelRenderable base_renderable;
+    ModelRenderable base_renderable;
     ModelRenderable blockA_renderable;
     ModelRenderable blockB_renderable;
     ModelRenderable blockC_renderable;
     ModelRenderable blockD_renderable;
     ModelRenderable blockG_renderable;
     ViewRenderable viewRenderable;
+    private Vector3 modelScale = new Vector3(0.3f,0.3f,0.3f);
     private TransformableNode university;
     private TransformationSystem transformationSystem;
+    @Nullable private ObjectAnimator rotateAnimation = null;
 
-    //CompletableFuture<ModelRenderable> base_stage;
+    CompletableFuture<ModelRenderable> base_stage;
     CompletableFuture<ModelRenderable> blockA_stage;
     CompletableFuture<ModelRenderable> blockB_stage;
     CompletableFuture<ModelRenderable> blockC_stage;
@@ -80,11 +86,10 @@ public class MainActivity extends AppCompatActivity{
         scene=sceneView.getScene();
 
         initModels();
-
     }
 
     private void initModels() {
-        //base_stage = ModelRenderable.builder().build();
+        base_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/base.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
         blockA_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/a.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
         blockB_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/b.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
         blockC_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/c.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
@@ -95,13 +100,12 @@ public class MainActivity extends AppCompatActivity{
         loadModels();
     }
 
-
     public void loadModels(){
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
 
         // Runs CompleteableFuture to Render 3D models of the University
         // Prevents multiple buildings not rendered onto the screen
-        CompletableFuture.allOf(blockA_stage, blockB_stage, blockC_stage,
+        CompletableFuture.allOf(base_stage, blockA_stage, blockB_stage, blockC_stage,
                         blockD_stage, blockG_stage)
                 .handle((notUsed, throwable)->{
                     if(throwable!=null){
@@ -111,20 +115,21 @@ public class MainActivity extends AppCompatActivity{
                         return null;
                     }
                     try {
-                        blockA_renderable = blockA_stage.get();
-                        blockA_stage.thenAccept(model -> {
+                        base_renderable = base_stage.get();
+                        base_stage.thenAccept(model -> {
                             MainActivity activity = weakActivity.get();
                             if(activity!=null){
-                                activity.blockA_renderable = model;
+                                activity.base_renderable = model;
                                 addNodeToScene(model);
                             }
                         });
-                        /*blockA_renderable = blockA_stage.get();
+
+                        blockA_renderable = blockA_stage.get();
                         blockA_stage.thenAccept(model -> {
                             blockA_renderable = model;
                             addOtherNodetoUniversity("Block A",model);
 
-                        });*/
+                        });
                         blockB_renderable = blockB_stage.get();
                         blockB_stage.thenAccept(model -> {
                             blockB_renderable = model;
@@ -160,11 +165,60 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+    private void addNodeToScene(ModelRenderable model) {
+        university = new TransformableNode(transformationSystem);
+        university.getRotationController().setEnabled(true);
+        university.getTranslationController().setEnabled(false);
+        university.getScaleController().setEnabled(true);
+        university.getScaleController().setMaxScale(1f);
+        university.getScaleController().setMinScale(0.7f);
+        university.setWorldScale(modelScale);
+        university.setParent(scene);
+        university.setRenderable(model);
+        university.setName("UCSI University");
+        university.setLocalScale(modelScale);
+        university.setLocalPosition(new Vector3(-0.03f, -0.3f, -1.0f));
+        university.setLocalRotation(Quaternion.multiply(
+                Quaternion.axisAngle(new Vector3(0.5f, 0f, 0f), 70),
+                Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 170)));
+        university.setOnTouchListener(new Node.OnTouchListener() {
+            @Override
+            public boolean onTouch(HitTestResult hitTestResult, MotionEvent motionEvent) {
+                stopAnimation();
+                return false;
+            }
+        });
+        transformationSystem.selectNode(university);
+        scene.addChild(university);
+
+        startAnimation();
+    }
+
+    private static ObjectAnimator createAnimator() {
+        Quaternion orientation1 = Quaternion.axisAngle(new Vector3(0f, 1.0f, 0.0f), 0);
+        Quaternion orientation2 = Quaternion.axisAngle(new Vector3(0f, 1.0f, 0.0f), 120);
+        Quaternion orientation3 = Quaternion.axisAngle(new Vector3(0f, 1.0f, 0.0f), 240);
+        Quaternion orientation4 = Quaternion.axisAngle(new Vector3(0f, 1.0f, 0.0f), 360);
+
+        ObjectAnimator rotateAnimation = new ObjectAnimator();
+        rotateAnimation.setObjectValues(orientation1, orientation2, orientation3, orientation4);
+        rotateAnimation.setPropertyName("localRotation");
+        rotateAnimation.setEvaluator(new QuaternionEvaluator());
+        rotateAnimation.setRepeatCount(ObjectAnimator.INFINITE);
+        rotateAnimation.setRepeatMode(ObjectAnimator.RESTART);
+        rotateAnimation.setInterpolator(new LinearInterpolator());
+
+        return  rotateAnimation;
+    }
+
     private void addOtherNodetoUniversity(String name, ModelRenderable modelRenderable){
         Node otherBuilding = new Node();
         otherBuilding.setParent(university);
         otherBuilding.setRenderable(modelRenderable);
         otherBuilding.setName(name);
+        otherBuilding.setLocalRotation(Quaternion.multiply(
+                Quaternion.axisAngle(new Vector3(0.5f, 0f, 0f), 50),
+                Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 170)));
         otherBuilding.setOnTapListener(new Node.OnTapListener() {
             @Override
             public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
@@ -178,7 +232,7 @@ public class MainActivity extends AppCompatActivity{
     private void nodeTap(String name, Node parent) {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         String nameTrim = name.replace("Block","").trim();
-        Toast.makeText(this,"Node "+nameTrim+" Tap!",Toast.LENGTH_LONG).show();
+        Log.d("Node Tapped", "Node "+nameTrim+" Tap!");
         totalEvent = 0;
 
         ViewRenderable.builder()
@@ -217,14 +271,11 @@ public class MainActivity extends AppCompatActivity{
                                 activity.viewRenderable = viewRenderable;
                                 make_infoCard(name, parent, viewRenderable);
                             }
-
                         })
                 .exceptionally(
                         (throwable) -> {
                             throw new AssertionError("Could not load plane card view.", throwable);
                         });
-
-
     }
 
     private void buttonCLick(String name) {
@@ -237,10 +288,10 @@ public class MainActivity extends AppCompatActivity{
         infoCard.setEnabled(true);
         infoCard.setParent(parent);
         infoCard.setName("InfoCard: "+name);
-        infoCard.setLocalScale(new Vector3(0.3f,0.3f,0.3f));
+        infoCard.setLocalScale(modelScale);
         switch (name){
             case "Block A":
-                infoCard.setLocalPosition(new Vector3(0.0f, 0.3f, 3f));
+                infoCard.setLocalPosition(new Vector3(0.23f, 0.2f, -0.6f));
                 break;
             case "Block B":
                 infoCard.setLocalPosition(new Vector3(0.2f, 0.25f, -0.2f));
@@ -260,23 +311,23 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    private void addNodeToScene(ModelRenderable model) {
-        university = new TransformableNode(transformationSystem);
-        university.getRotationController().setEnabled(true);
-        university.getTranslationController().setEnabled(false);
-        university.getScaleController().setEnabled(true);
-        university.getScaleController().setMaxScale(1f);
-        university.getScaleController().setMinScale(0.7f);
-        university.setParent(scene);
-        university.setRenderable(model);
-        university.setName("UCSI University");
-        university.setLocalScale(new Vector3(0.3f, 0.3f, 0.3f));
-        university.setLocalRotation(Quaternion.multiply(
-                Quaternion.axisAngle(new Vector3(0.5f, 0f, 0f), 70),
-                Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 170)));
-        university.setLocalPosition(new Vector3(-0.03f, 0f, -1.0f));
-        transformationSystem.selectNode(university);
-        scene.addChild(university);
+    private void startAnimation(){
+        if(rotateAnimation != null){
+            return;
+        }
+        // Add Ratate Animation to the 3D model
+        rotateAnimation = createAnimator();
+        rotateAnimation.setTarget(university);
+        rotateAnimation.setDuration(5000);
+        rotateAnimation.start();
+    }
+
+    private void stopAnimation(){
+        if(rotateAnimation == null){
+            return;
+        }
+        rotateAnimation.cancel();
+        rotateAnimation = null;
     }
 
     @Override
