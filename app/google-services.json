@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "390712058331",
+    "firebase_url": "https://event-hotspot-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "event-hotspot",
     "storage_bucket": "event-hotspot.appspot.com"
   },

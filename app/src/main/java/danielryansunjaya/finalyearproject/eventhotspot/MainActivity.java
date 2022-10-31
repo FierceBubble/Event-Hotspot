@@ -6,9 +6,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -62,8 +70,9 @@ public class MainActivity extends AppCompatActivity{
     FirebaseAuth auth;
     FirebaseFirestore db;
     FirebaseDatabase rtDB;
+    TextView signupText;
     EditText insertemail,insertpassword;
-    Button loginBtn, signupBtn;
+    Button loginBtn;
     LinearLayout loginLayout, mainLayout;
 
     @Nullable private ObjectAnimator rotateAnimation = null;
@@ -100,6 +109,7 @@ public class MainActivity extends AppCompatActivity{
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         rtDB = FirebaseDatabase.getInstance();
+
         insertemail = findViewById(R.id.insertEmail);
         insertpassword = findViewById(R.id.insertPassword);
         loginLayout = findViewById(R.id.loginLayout);
@@ -111,6 +121,25 @@ public class MainActivity extends AppCompatActivity{
                 userLogin();
             }
         });
+        signupText = findViewById(R.id.signupText);
+        String signupTextv = "No Account? Sign-up Here!";
+        SpannableString ss = new SpannableString(signupTextv);
+        ClickableSpan ss_signupPage = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View view) {
+                startActivity(new Intent(MainActivity.this, SignUpActivity.class));
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds){
+                super.updateDrawState(ds);
+                ds.setColor(Color.BLUE);
+            }
+        };
+        ss.setSpan(ss_signupPage,20,24, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        signupText.setText(ss);
+        signupText.setMovementMethod(LinkMovementMethod.getInstance());
+
 
         transformationSystem = new TransformationSystem(getResources().getDisplayMetrics(),new FootprintSelectionVisualizer());
         sceneView = findViewById(R.id.arFragment);
@@ -122,7 +151,6 @@ public class MainActivity extends AppCompatActivity{
                 }
             }
         });
-
         sceneView.getScene().getCamera().setLocalPosition(new Vector3(0,-0.5f,0.5f));
         //sceneView.getScene().getCamera().setLocalPosition(new Vector3(0,-0.25f,0.5f));
         scene=sceneView.getScene();
