@@ -5,19 +5,25 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.filament.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
@@ -31,18 +37,39 @@ import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.FootprintSelectionVisualizer;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import danielryansunjaya.finalyearproject.eventhotspot.models.BuildingNode;
+
 public class MainActivity extends AppCompatActivity{
 
-    private FirebaseFirestore db;
+    FirebaseAuth auth;
+    FirebaseFirestore db;
+    FirebaseDatabase rtDB;
+    EditText insertemail,insertpassword;
+    Button loginBtn, signupBtn;
+    LinearLayout loginLayout, mainLayout;
 
+    @Nullable private ObjectAnimator rotateAnimation = null;
+    private Vector3 modelScale = new Vector3(0.3f,0.3f,0.3f);
+    private TransformableNode university;
+    private TransformationSystem transformationSystem;
     private SceneView sceneView;
     private Scene scene;
     ModelRenderable base_renderable;
@@ -52,10 +79,6 @@ public class MainActivity extends AppCompatActivity{
     ModelRenderable blockD_renderable;
     ModelRenderable blockG_renderable;
     ViewRenderable viewRenderable;
-    private Vector3 modelScale = new Vector3(0.3f,0.3f,0.3f);
-    private TransformableNode university;
-    private TransformationSystem transformationSystem;
-    @Nullable private ObjectAnimator rotateAnimation = null;
 
     CompletableFuture<ModelRenderable> base_stage;
     CompletableFuture<ModelRenderable> blockA_stage;
@@ -65,24 +88,43 @@ public class MainActivity extends AppCompatActivity{
     CompletableFuture<ModelRenderable> blockG_stage;
 
     public int totalEvent;
+    public boolean isLogin = false;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-       db = FirebaseFirestore.getInstance();
+        FirebaseApp.initializeApp(this);
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        rtDB = FirebaseDatabase.getInstance();
+        insertemail = findViewById(R.id.insertEmail);
+        insertpassword = findViewById(R.id.insertPassword);
+        loginLayout = findViewById(R.id.loginLayout);
+        mainLayout = findViewById(R.id.mainLayout);
+        loginBtn = findViewById(R.id.loginBtn);
+        loginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userLogin();
+            }
+        });
 
         transformationSystem = new TransformationSystem(getResources().getDisplayMetrics(),new FootprintSelectionVisualizer());
         sceneView = findViewById(R.id.arFragment);
         sceneView.getScene().addOnPeekTouchListener(new Scene.OnPeekTouchListener() {
             @Override
             public void onPeekTouch(HitTestResult hitTestResult, MotionEvent motionEvent) {
-                transformationSystem.onTouch(hitTestResult,motionEvent);
+                if(isLogin == true){
+                    transformationSystem.onTouch(hitTestResult,motionEvent);
+                }
             }
         });
 
-        sceneView.getScene().getCamera().setLocalPosition(new Vector3(0,-0.25f,0.5f));
+        sceneView.getScene().getCamera().setLocalPosition(new Vector3(0,-0.5f,0.5f));
+        //sceneView.getScene().getCamera().setLocalPosition(new Vector3(0,-0.25f,0.5f));
         scene=sceneView.getScene();
 
         initModels();
@@ -95,7 +137,7 @@ public class MainActivity extends AppCompatActivity{
         blockC_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/c.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
         blockD_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/d.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
         blockG_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/g.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
-        Log.d("MainActivity", "Model Successfully Built");
+        Log.d("initModels", "All Models Successfully Built!");
 
         loadModels();
     }
@@ -125,35 +167,20 @@ public class MainActivity extends AppCompatActivity{
                         });
 
                         blockA_renderable = blockA_stage.get();
-                        blockA_stage.thenAccept(model -> {
-                            blockA_renderable = model;
-                            addOtherNodetoUniversity("Block A",model);
+                        createBuildingNode("Block A", blockA_renderable, blockA_stage, new Vector3(0.23f, 0.2f, -0.6f));
 
-                        });
                         blockB_renderable = blockB_stage.get();
-                        blockB_stage.thenAccept(model -> {
-                            blockB_renderable = model;
-                            addOtherNodetoUniversity("Block B",model);
+                        createBuildingNode("Block B", blockB_renderable, blockB_stage, new Vector3(0.2f, 0.25f, -0.2f));
 
-                        });
                         blockC_renderable = blockC_stage.get();
-                        blockC_stage.thenAccept(model -> {
-                            blockC_renderable = model;
-                            addOtherNodetoUniversity("Block C",model);
+                        createBuildingNode("Block C", blockC_renderable, blockC_stage, new Vector3(0.3f, 0.45f, 0.3f));
 
-                        });
                         blockD_renderable = blockD_stage.get();
-                        blockD_stage.thenAccept(model -> {
-                            blockD_renderable = model;
-                            addOtherNodetoUniversity("Block D",model);
+                        createBuildingNode("Block D", blockD_renderable, blockD_stage,new Vector3(0.3f, 0.4f, 0.75f));
 
-                        });
                         blockG_renderable = blockG_stage.get();
-                        blockG_stage.thenAccept(model -> {
-                            blockG_renderable = model;
-                            addOtherNodetoUniversity("Block G",model);
+                        createBuildingNode("Block G", blockG_renderable, blockG_stage,new Vector3(-0.4f, 0.65f, 0.5f));
 
-                        });
 
                         Log.d("MainActivity", "Model Successfully Placed on Screen!");
 
@@ -162,8 +189,16 @@ public class MainActivity extends AppCompatActivity{
                     }
                     return null;
                 });
-
+        Log.d("MainActivity", "Model Successfully Loaded!");
     }
+
+    private void createBuildingNode(String name, ModelRenderable modelRenderable, CompletableFuture<ModelRenderable> stage, Vector3 infoCardPosition){
+        stage.thenAccept(model->{
+           addOtherNodetoUniversity(name, modelRenderable, infoCardPosition);
+        });
+        Log.d("createBuildingNode", "Building "+name+" Added to Base!");
+    }
+
 
     private void addNodeToScene(ModelRenderable model) {
         university = new TransformableNode(transformationSystem);
@@ -178,21 +213,34 @@ public class MainActivity extends AppCompatActivity{
         university.setName("UCSI University");
         university.setLocalScale(modelScale);
         university.setLocalPosition(new Vector3(-0.03f, -0.3f, -1.0f));
-        university.setLocalRotation(Quaternion.multiply(
-                Quaternion.axisAngle(new Vector3(0.5f, 0f, 0f), 70),
-                Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 170)));
         university.setOnTouchListener(new Node.OnTouchListener() {
             @Override
             public boolean onTouch(HitTestResult hitTestResult, MotionEvent motionEvent) {
-                stopAnimation();
+                if(isLogin==true){
+                    stopAnimation();
+                }
                 return false;
             }
         });
+        //createBuilding("Block A", blockA_renderable, blockA_stage, new Vector3(0.23f, 0.2f, -0.6f));
+
         transformationSystem.selectNode(university);
         scene.addChild(university);
-
+        Log.d("addNodeToScene", "Base Model Rendered!");
         startAnimation();
     }
+
+    /*private Node createBuilding(String name, ModelRenderable modelRenderable, CompletableFuture<ModelRenderable> stage, Vector3 infoCardPosition){
+        BuildingNode node = new BuildingNode(modelRenderable, stage, name, infoCardPosition, this);
+        node.setParent(university);
+        node.setRenderable(modelRenderable);
+        node.setName(name);
+        node.setLocalRotation(Quaternion.multiply(
+                Quaternion.axisAngle(new Vector3(0.5f, 0f, 0f), 50),
+                Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 170)));
+
+        return node;
+    }*/
 
     private static ObjectAnimator createAnimator() {
         Quaternion orientation1 = Quaternion.axisAngle(new Vector3(0f, 1.0f, 0.0f), 0);
@@ -211,7 +259,7 @@ public class MainActivity extends AppCompatActivity{
         return  rotateAnimation;
     }
 
-    private void addOtherNodetoUniversity(String name, ModelRenderable modelRenderable){
+    private void addOtherNodetoUniversity(String name, ModelRenderable modelRenderable, Vector3 infoCardPosition){
         Node otherBuilding = new Node();
         otherBuilding.setParent(university);
         otherBuilding.setRenderable(modelRenderable);
@@ -222,14 +270,16 @@ public class MainActivity extends AppCompatActivity{
         otherBuilding.setOnTapListener(new Node.OnTapListener() {
             @Override
             public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
-                nodeTap(name, otherBuilding);
+                if(isLogin==true){
+                    nodeTap(name, otherBuilding, infoCardPosition);
+                }
             }
         });
-        university.addChild(otherBuilding);
-
+        //university.addChild(otherBuilding);
+        Log.d("addOtherNodetoUniversity", "Building "+name+" Rendered!");
     }
 
-    private void nodeTap(String name, Node parent) {
+    private void nodeTap(String name, Node parent, Vector3 infoCardPosition) {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         String nameTrim = name.replace("Block","").trim();
         Log.d("Node Tapped", "Node "+nameTrim+" Tap!");
@@ -269,7 +319,7 @@ public class MainActivity extends AppCompatActivity{
                                         });
 
                                 activity.viewRenderable = viewRenderable;
-                                make_infoCard(name, parent, viewRenderable);
+                                make_infoCard(name, parent, viewRenderable, infoCardPosition);
                             }
                         })
                 .exceptionally(
@@ -282,33 +332,15 @@ public class MainActivity extends AppCompatActivity{
         Toast.makeText(this,"Button "+name+" Clicked!",Toast.LENGTH_LONG).show();
     }
 
-    private void make_infoCard(String name, Node parent, ViewRenderable viewRenderable){
+    private void make_infoCard(String name, Node parent, ViewRenderable viewRenderable, Vector3 infoCardPosition){
         Node infoCard = new Node();
         infoCard.setRenderable(viewRenderable);
         infoCard.setEnabled(true);
         infoCard.setParent(parent);
         infoCard.setName("InfoCard: "+name);
         infoCard.setLocalScale(modelScale);
-        switch (name){
-            case "Block A":
-                infoCard.setLocalPosition(new Vector3(0.23f, 0.2f, -0.6f));
-                break;
-            case "Block B":
-                infoCard.setLocalPosition(new Vector3(0.2f, 0.25f, -0.2f));
-                break;
-            case "Block C":
-                infoCard.setLocalPosition(new Vector3(0.3f, 0.45f, 0.3f));
-                break;
-            case "Block D":
-                infoCard.setLocalPosition(new Vector3(0.3f, 0.4f, 0.75f));
-                break;
-            case "Block G":
-                infoCard.setLocalPosition(new Vector3(-0.4f, 0.65f, 0.5f));
-                break;
-        }
-
-        Log.d("make_infoCard", "InfoCard "+name+" successfully created!");
-
+        infoCard.setLocalPosition(infoCardPosition);
+        Log.d("make_infoCard", "InfoCard "+name+" Created!");
     }
 
     private void startAnimation(){
@@ -318,8 +350,9 @@ public class MainActivity extends AppCompatActivity{
         // Add Ratate Animation to the 3D model
         rotateAnimation = createAnimator();
         rotateAnimation.setTarget(university);
-        rotateAnimation.setDuration(5000);
+        rotateAnimation.setDuration(7000);
         rotateAnimation.start();
+        Log.d("Rotate Animation", "Animation Started!");
     }
 
     private void stopAnimation(){
@@ -328,7 +361,43 @@ public class MainActivity extends AppCompatActivity{
         }
         rotateAnimation.cancel();
         rotateAnimation = null;
+        Log.d("Rotate Animation", "Animation Stopped!");
     }
+
+    private void userLogin(){
+        String email = insertemail.getText().toString();
+        String password = insertpassword.getText().toString();
+
+        if(TextUtils.isEmpty(email)){
+            Toast.makeText(this, "Email is empty!",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(password)){
+            Toast.makeText(this, "Password is empty!",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(password.length()<6){
+            Toast.makeText(this, "Password should be more than 6 characters!",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        auth.signInWithEmailAndPassword(email,password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+                            isLogin = true;
+                            loginLayout.setVisibility(View.INVISIBLE);
+                            mainLayout.setVisibility(View.VISIBLE);
+                            Log.d("userLogin", "Login Success!");
+                        }else {
+                            Log.d("userLogin", "Login Failed!");
+                        }
+                    }
+                });
+    }
+
+
 
     @Override
     protected  void onResume(){
@@ -345,5 +414,4 @@ public class MainActivity extends AppCompatActivity{
         super.onPause();
         sceneView.pause();
     }
-
 }
