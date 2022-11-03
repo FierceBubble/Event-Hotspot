@@ -104,7 +104,8 @@ public class SignUpActivity extends AppCompatActivity {
 
                         if(task.isSuccessful()){
                             FirebaseUser user = auth.getCurrentUser();
-                            UserModel UserModel=new UserModel(name,id,email,programme);
+                            int elePoints = 0;
+                            UserModel UserModel=new UserModel(name,id,email,programme, elePoints);
                             String uid= user.getUid();
 
                             rtDB.getReference().child("login").child(uid).setValue(UserModel);

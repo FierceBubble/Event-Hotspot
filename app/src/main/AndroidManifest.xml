@@ -27,8 +27,25 @@
         android:theme="@style/Theme.EventHotspot"
         tools:targetApi="31">
         <activity
+            android:name=".ListofEventsActivity"
+            android:exported="false"
+            android:label="List of Events">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false"
+            android:label="Profile">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".SignUpActivity"
-            android:exported="false">
+            android:exported="false"
+            android:label="Sign-Up">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

@@ -18,9 +18,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/mainLayout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:visibility="invisible"
@@ -30,26 +30,39 @@
 
         <Button
             android:id="@+id/leftbtn"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Left" />
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:text="List"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/centerbtn" />
 
         <Button
             android:id="@+id/centerbtn"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:text="Center" />
+            android:layout_gravity="center|center_horizontal"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"
+            android:text="Map"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/rightbtn"
+            app:layout_constraintStart_toEndOf="@+id/leftbtn"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/rightbtn"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Right"/>
+            android:layout_gravity="right"
+            android:layout_marginEnd="16dp"
+            android:text="Profile"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/centerbtn" />
 
 
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <LinearLayout

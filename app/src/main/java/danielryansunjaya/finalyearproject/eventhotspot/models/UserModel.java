@@ -5,12 +5,14 @@ public class UserModel {
     String studentID;
     String email;
     String programme;
+    int elePoints;
 
-    public UserModel(String name, String studentID, String email, String programme) {
+    public UserModel(String name, String studentID, String email, String programme, int elePoints) {
         this.name = name;
         this.studentID = studentID;
         this.email = email;
         this.programme = programme;
+        this.elePoints = elePoints;
     }
 
     public String getName() {
@@ -43,5 +45,13 @@ public class UserModel {
 
     public void setProgramme(String programme) {
         this.programme = programme;
+    }
+
+    public int getElePoints() {
+        return elePoints;
+    }
+
+    public void setElePoints(int elePoints) {
+        this.elePoints = elePoints;
     }
 }
