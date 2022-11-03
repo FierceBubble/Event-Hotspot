@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -27,9 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.filament.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import com.google.ar.sceneform.HitTestResult;
@@ -40,7 +37,6 @@ import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.QuaternionEvaluator;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
-import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.FootprintSelectionVisualizer;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -53,17 +49,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import danielryansunjaya.finalyearproject.eventhotspot.models.BuildingNode;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -159,12 +149,12 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void initModels() {
-        base_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/base.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
-        blockA_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/a.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
-        blockB_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/b.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
-        blockC_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/c.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
-        blockD_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/d.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
-        blockG_stage = ModelRenderable.builder().setSource(this,Uri.parse("models/g.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
+        base_stage = ModelRenderable.builder().setSource(this,Uri.parse("glbFiles/base.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
+        blockA_stage = ModelRenderable.builder().setSource(this,Uri.parse("glbFiles/a.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
+        blockB_stage = ModelRenderable.builder().setSource(this,Uri.parse("glbFiles/b.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
+        blockC_stage = ModelRenderable.builder().setSource(this,Uri.parse("glbFiles/c.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
+        blockD_stage = ModelRenderable.builder().setSource(this,Uri.parse("glbFiles/d.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
+        blockG_stage = ModelRenderable.builder().setSource(this,Uri.parse("glbFiles/g.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
         Log.d("initModels", "All Models Successfully Built!");
 
         loadModels();

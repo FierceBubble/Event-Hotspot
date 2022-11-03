@@ -16,14 +16,14 @@ import java.util.List;
 import danielryansunjaya.finalyearproject.eventhotspot.R;
 import danielryansunjaya.finalyearproject.eventhotspot.models.EventModel;
 
-public class eventsAdapter extends RecyclerView.Adapter<eventsAdapter.ViewHolder> {
+public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder> {
 
     private Context context;
     private List<EventModel> eventModelList;
     private OnClickJoinEventListener monClickJoinEventListener;
 
 
-    public eventsAdapter(Context context, List<EventModel> eventModelList, OnClickJoinEventListener monClickJoinEventListener) {
+    public EventsAdapter(Context context, List<EventModel> eventModelList, OnClickJoinEventListener monClickJoinEventListener) {
         this.context = context;
         this.eventModelList = eventModelList;
         this.monClickJoinEventListener = monClickJoinEventListener;
