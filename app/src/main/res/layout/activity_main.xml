@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/white"
     tools:context=".MainActivity">
 
     <com.google.ar.sceneform.SceneView
@@ -16,6 +16,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="@color/design_default_color_primary"
+        app:layout_constraintBottom_toTopOf="@+id/mainLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:id="@+id/fragmentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
+    </LinearLayout>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,37 +49,40 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/leftbtn"
+            android:id="@+id/listAllEventBtn"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
             android:text="List"
+            android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/centerbtn" />
+            app:layout_constraintTop_toTopOf="@+id/mapBtn" />
 
         <Button
-            android:id="@+id/centerbtn"
+            android:id="@+id/mapBtn"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_horizontal"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="24dp"
             android:text="Map"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/rightbtn"
-            app:layout_constraintStart_toEndOf="@+id/leftbtn"
+            app:layout_constraintEnd_toStartOf="@+id/profileBtn"
+            app:layout_constraintStart_toEndOf="@+id/listAllEventBtn"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/rightbtn"
+            android:id="@+id/profileBtn"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:layout_marginEnd="16dp"
             android:text="Profile"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/centerbtn" />
+            app:layout_constraintTop_toTopOf="@+id/mapBtn" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

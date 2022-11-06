@@ -4,6 +4,9 @@ public class EventModel {
     String title, date, email, location, organizer, pic, time;
     int elePoint;
 
+    public EventModel(){
+    }
+
     public EventModel(String title, String date, String email, String location, String organizer, String pic, String time, int elePoint) {
         this.title = title;
         this.date = date;

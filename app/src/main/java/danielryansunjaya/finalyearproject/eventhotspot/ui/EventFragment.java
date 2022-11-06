@@ -44,8 +44,11 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_event, container, false);
+        return inflater.inflate(R.layout.fragment_event, container, false);
+    }
 
+    @Override
+    public void onViewCreated(View root, Bundle savedInstanceState){
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
@@ -60,8 +63,6 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
                 listAll();
             }
         });
-
-        return root;
     }
 
     private void listAll() {

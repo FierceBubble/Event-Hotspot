@@ -3,6 +3,8 @@ package danielryansunjaya.finalyearproject.eventhotspot;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -54,6 +56,8 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import danielryansunjaya.finalyearproject.eventhotspot.ui.EventFragment;
+
 
 public class MainActivity extends AppCompatActivity{
 
@@ -62,8 +66,9 @@ public class MainActivity extends AppCompatActivity{
     FirebaseDatabase rtDB;
     TextView signupText;
     EditText insertemail,insertpassword;
-    Button loginBtn;
-    LinearLayout loginLayout, mainLayout;
+    Button loginBtn, listAllEventBtn, profileBtn, mapBtn;
+    LinearLayout loginLayout, fragmentContainer;
+    ConstraintLayout mainLayout;
 
     @Nullable private ObjectAnimator rotateAnimation = null;
     private Vector3 modelScale = new Vector3(0.3f,0.3f,0.3f);
@@ -144,8 +149,32 @@ public class MainActivity extends AppCompatActivity{
         sceneView.getScene().getCamera().setLocalPosition(new Vector3(0,-0.5f,0.5f));
         //sceneView.getScene().getCamera().setLocalPosition(new Vector3(0,-0.25f,0.5f));
         scene=sceneView.getScene();
-
         initModels();
+
+        // Create Fragments
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragmentLayout, new EventFragment());
+        ft.commit();
+
+
+        fragmentContainer = findViewById(R.id.fragmentContainer);
+        listAllEventBtn = findViewById(R.id.listAllEventBtn);
+        listAllEventBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //sceneView.setVisibility(View.INVISIBLE);
+                fragmentContainer.setVisibility(View.VISIBLE);
+            }
+        });
+
+        mapBtn = findViewById(R.id.mapBtn);
+        mapBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //sceneView.setVisibility(View.VISIBLE);
+                fragmentContainer.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     private void initModels() {
