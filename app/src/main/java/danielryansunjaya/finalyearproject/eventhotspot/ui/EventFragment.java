@@ -69,6 +69,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
             @Override
             public void onRefresh() {
                 refresh.setRefreshing(false);
+                Log.i(TAG+" [Refresh]","Successfully refresh EventFragment!");
                 listAll();
             }
         });
@@ -91,8 +92,9 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
                                 eventModelList.add(eventModel);
                                 eventsAdapter.notifyDataSetChanged();
                             }
-                            Log.i(TAG+" [listAll]","Successfully to display user's joined event!");
+                            Log.i(TAG+" [listAll]","Successfully display all events!");
                         } else {
+                            Log.i(TAG+" [listAll]","Failed to display all events!");
                             Toast.makeText(getActivity(), "Error"+task.getException(), Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -178,8 +180,6 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
                         }
                     }
                 });
-
-
 
         Toast.makeText(getActivity(),"Event Joined!",Toast.LENGTH_SHORT).show();
     }

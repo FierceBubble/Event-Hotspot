@@ -46,7 +46,7 @@ public class UserEventAdapter extends RecyclerView.Adapter<UserEventAdapter.View
         holder.picEmail.setText(eventModelList.get(position).getEmail());
         holder.date.setText(eventModelList.get(position).getDate());
         holder.time.setText(eventModelList.get(position).getTime());
-        holder.elePoint.setText("Ele Point "+ eventModelList.get(position).getElePoint());
+        holder.elePoint.setText("Ele Point\n"+ eventModelList.get(position).getElePoint());
         holder.location.setText("Block "+eventModelList.get(position).getLocation());
 
     }

@@ -7,6 +7,8 @@ public class UserModel {
     String programme;
     int elePoints;
 
+    public UserModel(){}
+
     public UserModel(String name, String studentID, String email, String programme, int elePoints) {
         this.name = name;
         this.studentID = studentID;

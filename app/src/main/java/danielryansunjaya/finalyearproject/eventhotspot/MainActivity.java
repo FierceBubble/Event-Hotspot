@@ -47,20 +47,26 @@ import com.google.ar.sceneform.ux.TransformationSystem;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import danielryansunjaya.finalyearproject.eventhotspot.models.UserModel;
 import danielryansunjaya.finalyearproject.eventhotspot.ui.EventFragment;
 
 
 public class MainActivity extends AppCompatActivity{
 
+    private static final String TAG ="MainActivity";
     FirebaseAuth auth;
     FirebaseFirestore db;
     FirebaseDatabase rtDB;
@@ -93,6 +99,8 @@ public class MainActivity extends AppCompatActivity{
 
     public int totalEvent;
     public boolean isLogin = false;
+    public boolean isOnMap = false;
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -141,7 +149,7 @@ public class MainActivity extends AppCompatActivity{
         sceneView.getScene().addOnPeekTouchListener(new Scene.OnPeekTouchListener() {
             @Override
             public void onPeekTouch(HitTestResult hitTestResult, MotionEvent motionEvent) {
-                if(isLogin == true){
+                if(isLogin && isOnMap){
                     transformationSystem.onTouch(hitTestResult,motionEvent);
                 }
             }
@@ -162,6 +170,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 //sceneView.setVisibility(View.INVISIBLE);
+                isOnMap = false;
                 fragmentContainer.setVisibility(View.VISIBLE);
                 fragmentContainer_Profile.setVisibility(View.INVISIBLE);
             }
@@ -172,6 +181,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 //sceneView.setVisibility(View.VISIBLE);
+                isOnMap = true;
                 fragmentContainer.setVisibility(View.INVISIBLE);
                 fragmentContainer_Profile.setVisibility(View.INVISIBLE);
             }
@@ -187,6 +197,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 //sceneView.setVisibility(View.INVISIBLE);
+                isOnMap = false;
                 fragmentContainer.setVisibility(View.INVISIBLE);
                 fragmentContainer_Profile.setVisibility(View.VISIBLE);
             }
@@ -279,7 +290,7 @@ public class MainActivity extends AppCompatActivity{
         university.setOnTouchListener(new Node.OnTouchListener() {
             @Override
             public boolean onTouch(HitTestResult hitTestResult, MotionEvent motionEvent) {
-                if(isLogin==true){
+                if(isLogin && isOnMap){
                     stopAnimation();
                 }
                 return false;
@@ -333,7 +344,7 @@ public class MainActivity extends AppCompatActivity{
         otherBuilding.setOnTapListener(new Node.OnTapListener() {
             @Override
             public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
-                if(isLogin==true){
+                if(isLogin && isOnMap){
                     nodeTap(name, otherBuilding, infoCardPosition);
                 }
             }
@@ -450,6 +461,7 @@ public class MainActivity extends AppCompatActivity{
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             isLogin = true;
+                            isOnMap = true;
                             loginLayout.setVisibility(View.INVISIBLE);
                             mainLayout.setVisibility(View.VISIBLE);
                             Log.d("userLogin", "Login Success!");
@@ -459,7 +471,6 @@ public class MainActivity extends AppCompatActivity{
                     }
                 });
     }
-
 
 
     @Override

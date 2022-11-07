@@ -88,7 +88,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="10:00am - 03:00pm"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:layout_marginRight="10dp"/>
 
                 <TextView
                     android:id="@+id/location_text"
