@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity{
     TextView signupText;
     EditText insertemail,insertpassword;
     Button loginBtn, listAllEventBtn, profileBtn, mapBtn;
-    LinearLayout loginLayout, fragmentContainer;
+    LinearLayout loginLayout, fragmentContainer, fragmentContainer_Profile;
     ConstraintLayout mainLayout;
 
     @Nullable private ObjectAnimator rotateAnimation = null;
@@ -156,7 +156,6 @@ public class MainActivity extends AppCompatActivity{
         ft.replace(R.id.fragmentLayout, new EventFragment());
         ft.commit();
 
-
         fragmentContainer = findViewById(R.id.fragmentContainer);
         listAllEventBtn = findViewById(R.id.listAllEventBtn);
         listAllEventBtn.setOnClickListener(new View.OnClickListener() {
@@ -164,6 +163,7 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View view) {
                 //sceneView.setVisibility(View.INVISIBLE);
                 fragmentContainer.setVisibility(View.VISIBLE);
+                fragmentContainer_Profile.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -173,6 +173,22 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View view) {
                 //sceneView.setVisibility(View.VISIBLE);
                 fragmentContainer.setVisibility(View.INVISIBLE);
+                fragmentContainer_Profile.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        FragmentTransaction ft_profile = getSupportFragmentManager().beginTransaction();
+        ft_profile.replace(R.id.fragmentLayout_Profile, new ProfileFragment());
+        ft_profile.commit();
+
+        fragmentContainer_Profile = findViewById(R.id.fragmentContainer_Profile);
+        profileBtn = findViewById(R.id.profileBtn);
+        profileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //sceneView.setVisibility(View.INVISIBLE);
+                fragmentContainer.setVisibility(View.INVISIBLE);
+                fragmentContainer_Profile.setVisibility(View.VISIBLE);
             }
         });
     }

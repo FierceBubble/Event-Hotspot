@@ -37,6 +37,26 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/fragmentContainer_Profile"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="@color/design_default_color_primary"
+        app:layout_constraintBottom_toTopOf="@+id/mainLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:id="@+id/fragmentLayout_Profile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
+    </LinearLayout>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/mainLayout"

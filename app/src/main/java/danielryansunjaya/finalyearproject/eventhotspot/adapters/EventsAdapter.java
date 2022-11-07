@@ -46,7 +46,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.picEmail.setText(eventModelList.get(position).getEmail());
         holder.date.setText(eventModelList.get(position).getDate());
         holder.time.setText(eventModelList.get(position).getTime());
-        holder.elePoint.setText("Ele Point\n"+String.valueOf(eventModelList.get(position).getElePoint()));
+        holder.elePoint.setText("Ele Point\n"+ eventModelList.get(position).getElePoint());
         holder.location.setText("Block "+eventModelList.get(position).getLocation());
 
     }
