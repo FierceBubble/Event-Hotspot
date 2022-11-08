@@ -2,21 +2,40 @@ package danielryansunjaya.finalyearproject.eventhotspot.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import danielryansunjaya.finalyearproject.eventhotspot.R;
 import danielryansunjaya.finalyearproject.eventhotspot.models.EventModel;
 
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder> {
+
+    private static final String TAG ="EventAdapter";
+    FirebaseAuth auth;
+    FirebaseFirestore db;
+    FirebaseDatabase rtdb;
 
     private Context context;
     private List<EventModel> eventModelList;
@@ -27,6 +46,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         this.context = context;
         this.eventModelList = eventModelList;
         this.monClickJoinEventListener = monClickJoinEventListener;
+
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        rtdb = FirebaseDatabase.getInstance();
     }
 
     @NonNull
@@ -60,7 +83,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
         TextView title, organizer, pic, picEmail, date, time, location, elePoint;
         Button joinBtn;
-
 
         OnClickJoinEventListener onClickJoinEventListener;
         public ViewHolder(@NonNull View itemView, OnClickJoinEventListener onClickJoinEventListener) {

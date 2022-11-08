@@ -84,6 +84,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
         db.collection("eventList")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
@@ -109,7 +110,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
 
     @Override
     public void OnClickJoinEventClick(int position) {
-       addEventToProfile(position);
+        addEventToProfile(position);
     }
 
     private void addEventToProfile(int position) {
@@ -127,7 +128,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
 
         // Inserting event informations to "joinedEventList" collection
         db.collection("studentsJoinEvents")
-                .document(auth.getUid())
+                .document(Objects.requireNonNull(auth.getUid()))
                 .collection("joinedEventList")
                 .document(eventModelList.get(position).getTitle())
                 .set(eventInfo)
@@ -183,4 +184,5 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
 
         Toast.makeText(getActivity(),"Event Joined!",Toast.LENGTH_SHORT).show();
     }
+
 }

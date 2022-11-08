@@ -127,10 +127,11 @@ public class ProfileFragment extends Fragment implements UserEventAdapter.OnClic
         recyclerView.setAdapter(userEventAdapter);
 
         db.collection("studentsJoinEvents")
-                .document(auth.getUid())
+                .document(Objects.requireNonNull(auth.getUid()))
                 .collection("joinedEventList")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
@@ -151,7 +152,25 @@ public class ProfileFragment extends Fragment implements UserEventAdapter.OnClic
 
     @Override
     public void OnClickCancelEventClick(int position) {
-
+        db.collection("studentsJoinEvents")
+                .document(Objects.requireNonNull(auth.getUid()))
+                .collection("joinedEventList")
+                .document(eventModelList.get(position).getTitle())
+                .delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            eventModelList.remove(eventModelList.get(position));
+                            userEventAdapter.notifyDataSetChanged();
+                            Log.i(TAG+" [OnClickCancelEvent]","Successfully cancelled user's joined event!");
+                            Toast.makeText(getActivity(), "Event is Cancelled!", Toast.LENGTH_SHORT ).show();
+                        }else{
+                            Log.i(TAG+" [OnClickCancelEvent]","Failed to cancelled user's joined event!\n"+ task.getException());
+                        }
+                    }
+                });
     }
 
 }
