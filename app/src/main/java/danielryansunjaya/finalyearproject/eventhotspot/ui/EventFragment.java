@@ -20,6 +20,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,6 +39,8 @@ import java.util.Objects;
 import danielryansunjaya.finalyearproject.eventhotspot.R;
 import danielryansunjaya.finalyearproject.eventhotspot.adapters.EventsAdapter;
 import danielryansunjaya.finalyearproject.eventhotspot.models.EventModel;
+import danielryansunjaya.finalyearproject.eventhotspot.models.UserModel;
+import danielryansunjaya.finalyearproject.eventhotspot.utils.JavaMailAPI;
 
 
 public class EventFragment extends Fragment implements EventsAdapter.OnClickJoinEventListener {
@@ -42,6 +48,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
     private static final String TAG ="EventFragment";
     RecyclerView recyclerView;
     FirebaseFirestore db;
+    FirebaseDatabase rtdb;
     FirebaseAuth auth;
 
     List<EventModel> eventModelList;
@@ -59,6 +66,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
     @Override
     public void onViewCreated(View root, Bundle savedInstanceState){
         db = FirebaseFirestore.getInstance();
+        rtdb = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
 
         recyclerView = root.findViewById(R.id.recyclerView);
@@ -181,8 +189,39 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
                         }
                     }
                 });
+        sendEmailNotif(eventModelList.get(position).getTitle());
 
         Toast.makeText(getActivity(),"Event Joined!",Toast.LENGTH_SHORT).show();
+    }
+
+    public void sendEmailNotif(String title){
+        rtdb.getReference()
+                .child("login")
+                .child(Objects.requireNonNull(auth.getUid()))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        UserModel userModel = snapshot.getValue(UserModel.class);
+                        assert userModel != null;
+                        String sName = userModel.getName();
+                        String sID = userModel.getStudentID();
+                        String sEmail = userModel.getEmail();
+
+                        String subject = "Successfully join "+title+"!";
+                        String message = "Dear "+sName+" - ("+sID+"),\n"+"Your request to joining ["+title+"] event has been confirmed!";
+
+                        JavaMailAPI javaMailAPI = new JavaMailAPI(getActivity(), sEmail, subject, message);
+                        javaMailAPI.execute();
+                        Log.i(TAG+" [sendEmailNotif]","Successfully send email notification for the joined event!");
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.i(TAG+" [sendEmailNotif]","Failed send email notification for the joined event!");
+                        throw error.toException();
+                    }
+                });
     }
 
 }
