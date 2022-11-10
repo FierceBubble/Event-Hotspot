@@ -4,4 +4,20 @@
         <item name="android:fontFamily">@font/nexa_black</item>
         <item name="fontFamily">@font/nexa_black</item>
     </style>
+    <style name="nexa_black_italic">
+        <item name="android:fontFamily">@font/nexa_black_italic</item>
+        <item name="fontFamily">@font/nexa_black_italic</item>
+    </style>
+    <style name="nexa_thin">
+        <item name="android:fontFamily">@font/nexa_thin</item>
+        <item name="fontFamily">@font/nexa_thin</item>
+    </style>
+    <style name="nexa_thin_italic">
+        <item name="android:fontFamily">@font/nexa_thin_italic</item>
+        <item name="fontFamily">@font/nexa_thin_italic</item>
+    </style>
+    <style name="nexa_regular_italic">
+        <item name="android:fontFamily">@font/nexa_regular_italic</item>
+        <item name="fontFamily">@font/nexa_regular_italic</item>
+    </style>
 </resources>

@@ -2,13 +2,14 @@ package danielryansunjaya.finalyearproject.eventhotspot;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,7 +21,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -30,17 +35,22 @@ import danielryansunjaya.finalyearproject.eventhotspot.utils.JavaMailAPI;
 
 public class SignUpActivity extends AppCompatActivity {
 
+    private static final String TAG ="SignUpActivity";
     FirebaseAuth auth;
     FirebaseDatabase rtDB;
+    Query query;
+    ValueEventListener valueEventListener;
     EditText inputName, inputID, inputProgramme, inputPassword, inputPassConfirm;
 
     private static final int TIMER = 2000;
     TextView signup_btn_text;
     RelativeLayout signup_btn_layout;
     LottieAnimationView signup_btn_animation_loading,
-            signup_btn_animation_check, signup_btn_animation_cross;
+            signup_btn_animation_check, signup_btn_animation_cross,
+            name_warning, id_warning, programme_warning,
+            password_warning, passConfirm_warning;
 
-    private String name, id, email, programme, password, passConfirm;
+    private String name, id, email, programme, password;
 
 
     @SuppressLint("MissingInflatedId")
@@ -58,6 +68,12 @@ public class SignUpActivity extends AppCompatActivity {
         inputPassword = findViewById(R.id.inputPassword);
         inputPassConfirm = findViewById(R.id.inputPassConfirm);
 
+        name_warning = findViewById(R.id.name_field_warning);
+        id_warning = findViewById(R.id.id_field_warning);
+        programme_warning = findViewById(R.id.programme_field_warning);
+        password_warning = findViewById(R.id.password_field_warning);
+        passConfirm_warning = findViewById(R.id.confirmPass_field_warning);
+
         signup_btn_text = findViewById(R.id.signup_button_text);
         signup_btn_animation_loading = findViewById(R.id.signup_button_animation_loading);
         signup_btn_animation_check = findViewById(R.id.signup_button_animation_check);
@@ -66,6 +82,21 @@ public class SignUpActivity extends AppCompatActivity {
         signup_btn_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                name_warning.setVisibility(View.GONE);
+                name_warning.pauseAnimation();
+                id_warning.setVisibility(View.GONE);
+                id_warning.pauseAnimation();
+                programme_warning.setVisibility(View.GONE);
+                programme_warning.pauseAnimation();
+                password_warning.setVisibility(View.GONE);
+                password_warning.pauseAnimation();
+                passConfirm_warning.setVisibility(View.GONE);
+                passConfirm_warning.pauseAnimation();
+
+                inputID.setHint("");
+                inputPassword.setHint("");
+                inputPassConfirm.setHint("");
+
                 signup_btn_text.setVisibility(View.GONE);
                 signup_btn_animation_loading.setVisibility(View.VISIBLE);
                 signup_btn_animation_loading.playAnimation();
@@ -75,73 +106,103 @@ public class SignUpActivity extends AppCompatActivity {
 
             public void insertInfo(){
                 if(noEmptyFields()){
-                    signup_btn_animation_loading.pauseAnimation();
-                    signup_btn_animation_loading.setVisibility(View.GONE);
-                    signup_btn_animation_check.setVisibility(View.VISIBLE);
-                    signup_btn_animation_check.playAnimation();
-                    new Handler().postDelayed(this::revertState,TIMER+3000);
+                    createAccount();
                 }else{
-                    signup_btn_animation_loading.pauseAnimation();
-                    signup_btn_animation_loading.setVisibility(View.GONE);
-                    signup_btn_animation_cross.setVisibility(View.VISIBLE);
-                    signup_btn_animation_cross.playAnimation();
-                    new Handler().postDelayed(this::revertState,TIMER+3000);
+                    failCreateAccount();
                 }
-
-            }
-
-            public void revertState(){
-                signup_btn_animation_check.pauseAnimation();
-                signup_btn_animation_check.setVisibility(View.GONE);
-                signup_btn_animation_cross.pauseAnimation();
-                signup_btn_animation_cross.setVisibility(View.GONE);
-                signup_btn_text.setVisibility(View.VISIBLE);
             }
         });
-
-
-
     }
+
 
     public Boolean noEmptyFields(){
         name = inputName.getText().toString();
         id = inputID.getText().toString();
-        email = inputID.getText().toString();
+        email = inputID.getText().toString()+"@ucsiuniversity.edu.my";
         programme = inputProgramme.getText().toString();
         password = inputPassword.getText().toString();
-        passConfirm = inputPassConfirm.getText().toString();
+        String passConfirm = inputPassConfirm.getText().toString();
 
         if(TextUtils.isEmpty(name)){
-            Toast.makeText(this, "Name is empty!",Toast.LENGTH_SHORT).show();
-            return false;
+            name_warning.setVisibility(View.VISIBLE);
+            name_warning.playAnimation();
         }
         if(TextUtils.isEmpty(id)){
-            Toast.makeText(this, "Student is empty!",Toast.LENGTH_SHORT).show();
-            return false;
+            id_warning.setVisibility(View.VISIBLE);
+            id_warning.playAnimation();
+        }
+        if(id.length()<10){
+            inputID.setText("");
+            inputID.setHint("ID too short!");
+            inputID.setHintTextColor(ContextCompat.getColor(this, R.color.highlights_orange));
+            id_warning.setVisibility(View.VISIBLE);
+            id_warning.playAnimation();
         }
         if(TextUtils.isEmpty(programme)){
-            Toast.makeText(this, "Programme is empty!",Toast.LENGTH_SHORT).show();
-            return false;
+            programme_warning.setVisibility(View.VISIBLE);
+            programme_warning.playAnimation();
+
         }
         if(TextUtils.isEmpty(password)){
-            Toast.makeText(this, "Password is empty!",Toast.LENGTH_SHORT).show();
-            return false;
+            password_warning.setVisibility(View.VISIBLE);
+            password_warning.playAnimation();
         }
         if(password.length()<6){
-            Toast.makeText(this, "Password should be more than 6 characters!",Toast.LENGTH_SHORT).show();
-            return false;
+            inputPassword.setText("");
+            inputPassword.setHint("Password too short!");
+            inputPassword.setHintTextColor(ContextCompat.getColor(this, R.color.highlights_orange));
+            password_warning.setVisibility(View.VISIBLE);
+            password_warning.playAnimation();
         }
         if(!passConfirm.equals(password)){
-            Toast.makeText(this, "Confirm Password is not the same!",Toast.LENGTH_SHORT).show();
-            return false;
+            inputPassConfirm.setText("");
+            inputPassConfirm.setHint("They are different!");
+            inputPassConfirm.setHintTextColor(ContextCompat.getColor(this, R.color.highlights_orange));
+            passConfirm_warning.setVisibility(View.VISIBLE);
+            passConfirm_warning.playAnimation();
         }
-        return true;
+
+        if(TextUtils.isEmpty(name)||TextUtils.isEmpty(id)||
+                TextUtils.isEmpty(programme)||TextUtils.isEmpty(password)||
+                TextUtils.isEmpty(passConfirm)||id.length()<10||
+                password.length()<6||!passConfirm.equals(password)){
+            Toast.makeText(this, "Please recheck fields!",Toast.LENGTH_SHORT).show();
+            return false;
+        }else{
+            return true;
+        }
     }
 
 
-    private void createNewAccount(){
+    public void createAccount(){
+        query = rtDB.getReference().child("login").orderByChild("studentID").equalTo(id);
+        valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!snapshot.exists()){
+                    insertingDB();
+                }else{
+                    failCreateAccount();
+                    id_warning.setVisibility(View.VISIBLE);
+                    id_warning.playAnimation();
+                    inputID.setText("");
+                    inputID.setHint("ACCOUNT EXIST!");
+                    inputID.setHintTextColor(ContextCompat.getColor(SignUpActivity.this, R.color.highlights_orange));
 
+                    Toast.makeText(SignUpActivity.this, "Account with the ID exist!\nPlease login instead!",Toast.LENGTH_SHORT).show();
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG,"Error: "+error.getMessage());
+            }
+        };
+        query.addListenerForSingleValueEvent(valueEventListener);
+    }
+
+    public void insertingDB(){
+        query.removeEventListener(valueEventListener);
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -150,22 +211,17 @@ public class SignUpActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             FirebaseUser user = auth.getCurrentUser();
                             int elePoints = 0;
-                            UserModel UserModel=new UserModel(name,id,email+"@ucsiuniversity.edu.my",programme, elePoints);
+                            UserModel UserModel=new UserModel(name,id,email+"@ucsiuniversity.edu.my",programme, password, elePoints);
                             assert user != null;
                             String uid= user.getUid();
 
                             rtDB.getReference().child("login").child(uid).setValue(UserModel);
-
-                            finish();
-
-                            Toast.makeText(SignUpActivity.this, "SignUp Success!",Toast.LENGTH_SHORT).show();
-                        }else{
-                            Toast.makeText(SignUpActivity.this, "Error: "+task.getException(),Toast.LENGTH_SHORT).show();
+                            notifyUser();
                         }
                     }
                 });
-        notifyUser();
     }
+
 
     public void notifyUser(){
         String subject = "Account created successfully!";
@@ -180,6 +236,41 @@ public class SignUpActivity extends AppCompatActivity {
                 "\n\nBest regards,\n\nUCSI Event Hotspot";
         JavaMailAPI javaMailAPI = new JavaMailAPI(this, email, subject, message);
         javaMailAPI.execute();
+
+        Log.i(TAG+"[notifyUser]", "Email Notification Successfully sent!");
+
+        signup_btn_animation_loading.pauseAnimation();
+        signup_btn_animation_loading.setVisibility(View.GONE);
+        signup_btn_animation_check.setVisibility(View.VISIBLE);
+        signup_btn_animation_check.playAnimation();
+
+        new Handler().postDelayed(this::closeActivity,TIMER+8000);
+
     }
 
+    public void failCreateAccount(){
+        signup_btn_animation_loading.pauseAnimation();
+        signup_btn_animation_loading.setVisibility(View.GONE);
+        signup_btn_animation_cross.setVisibility(View.VISIBLE);
+        signup_btn_animation_cross.playAnimation();
+        new Handler().postDelayed(this::revertState,TIMER+3000);
+    }
+
+    public void revertState(){
+        signup_btn_animation_check.pauseAnimation();
+        signup_btn_animation_check.setVisibility(View.GONE);
+        signup_btn_animation_cross.pauseAnimation();
+        signup_btn_animation_cross.setVisibility(View.GONE);
+        signup_btn_text.setVisibility(View.VISIBLE);
+    }
+
+    private void closeActivity() {
+        signup_btn_animation_check.pauseAnimation();
+        signup_btn_animation_check.setVisibility(View.GONE);
+        signup_btn_animation_cross.pauseAnimation();
+        signup_btn_animation_cross.setVisibility(View.GONE);
+        signup_btn_text.setVisibility(View.VISIBLE);
+        Toast.makeText(SignUpActivity.this, "SignUp Success!",Toast.LENGTH_SHORT).show();
+        finish();
+    }
 }

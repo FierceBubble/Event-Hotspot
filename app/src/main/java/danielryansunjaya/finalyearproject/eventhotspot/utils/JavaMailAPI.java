@@ -3,6 +3,7 @@ package danielryansunjaya.finalyearproject.eventhotspot.utils;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
@@ -17,6 +18,7 @@ import javax.mail.internet.MimeMessage;
 
 public class JavaMailAPI extends AsyncTask<Void,Void,Void>  {
 
+    private static final String TAG ="JavaMailAPI";
     private Context mContext;
     private Session mSession;
 
@@ -47,7 +49,7 @@ public class JavaMailAPI extends AsyncTask<Void,Void,Void>  {
         mProgressDialog.dismiss();
 
         //Show success toast
-        Toast.makeText(mContext,"Message Sent",Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "Message Sent");
     }
 
     @Override

@@ -14,5 +14,6 @@
         <!-- Customize your theme here. -->
         <item name="fontFamily">@font/nexa_regular</item>
         <item name="android:fontFamily">@font/nexa_regular</item>
+        <item name="android:windowFullscreen">false</item>
     </style>
 </resources>

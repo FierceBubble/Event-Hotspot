@@ -5,15 +5,17 @@ public class UserModel {
     String studentID;
     String email;
     String programme;
+    String password;
     int elePoints;
 
     public UserModel(){}
 
-    public UserModel(String name, String studentID, String email, String programme, int elePoints) {
+    public UserModel(String name, String studentID, String email, String programme, String password, int elePoints) {
         this.name = name;
         this.studentID = studentID;
         this.email = email;
         this.programme = programme;
+        this.password = password;
         this.elePoints = elePoints;
     }
 
@@ -47,6 +49,14 @@ public class UserModel {
 
     public void setProgramme(String programme) {
         this.programme = programme;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public int getElePoints() {
