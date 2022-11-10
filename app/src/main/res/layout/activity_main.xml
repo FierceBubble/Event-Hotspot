@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/main_bckg"
     tools:context=".MainActivity">
 
     <com.google.ar.sceneform.SceneView
         android:id="@+id/arFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/design_default_color_primary"
+        android:background="@color/background_darkBlue"
         app:layout_constraintBottom_toTopOf="@+id/mainLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,7 +23,7 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         android:visibility="gone"
-        android:background="@color/design_default_color_primary"
+        android:background="@color/main_bckg"
         app:layout_constraintBottom_toTopOf="@+id/mainLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +43,7 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         android:visibility="gone"
-        android:background="@color/design_default_color_primary"
+        android:background="@color/main_bckg"
         app:layout_constraintBottom_toTopOf="@+id/mainLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,7 +112,7 @@
         android:id="@+id/loginLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ff30"
+        android:background="@color/layout_darkblue"
         android:orientation="vertical"
         android:visibility="visible"
         android:paddingTop="16dp"
@@ -125,19 +125,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Email"
-            android:layout_marginBottom="4dp"/>
+            android:text="Student ID"
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/white"/>
 
         <EditText
-            android:id="@+id/insertEmail"
+            android:id="@+id/insertStudentID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:background="@drawable/loginpage_bg"
             android:ems="10"
-            android:inputType="textEmailAddress"
-            android:textColor="@color/black"
+            android:textAlignment="center"
+            android:maxLength="10"
+            android:inputType="number"
+            android:textColor="@color/white"
             android:layout_marginBottom="8dp"/>
 
         <TextView
@@ -145,7 +147,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="Password"
-            android:layout_marginBottom="4dp"/>
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/white"/>
 
         <EditText
             android:id="@+id/insertPassword"
@@ -153,11 +156,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:background="@drawable/loginpage_bg"
             android:ems="10"
+            android:textAlignment="center"
             android:inputType="textPassword"
-            android:textColor="@color/black"
-            android:layout_marginBottom="16dp"/>
+            android:textColor="@color/white"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="sans-serif"/>
 
         <Button
             android:id="@+id/loginBtn"
@@ -172,13 +176,15 @@
             android:text="- - - - -  Or  - - - - -"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/white"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="No account? Sign-up Here!"
             android:id="@+id/signupText"
+            android:textColor="@color/white"
             android:layout_gravity="center_horizontal"/>
 
 

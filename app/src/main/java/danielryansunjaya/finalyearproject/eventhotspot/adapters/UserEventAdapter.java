@@ -2,6 +2,7 @@ package danielryansunjaya.finalyearproject.eventhotspot.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,7 @@ public class UserEventAdapter extends RecyclerView.Adapter<UserEventAdapter.View
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull UserEventAdapter.ViewHolder holder, int position) {
-        // Display item in cardview
+        // Display item in CardView
         holder.title.setText(eventModelList.get(position).getTitle());
         holder.organizer.setText(eventModelList.get(position).getOrganizer());
         holder.pic.setText(eventModelList.get(position).getPic());
@@ -48,7 +49,6 @@ public class UserEventAdapter extends RecyclerView.Adapter<UserEventAdapter.View
         holder.time.setText(eventModelList.get(position).getTime());
         holder.elePoint.setText("Ele Point\n"+ eventModelList.get(position).getElePoint());
         holder.location.setText("Block "+eventModelList.get(position).getLocation());
-
     }
 
     @Override

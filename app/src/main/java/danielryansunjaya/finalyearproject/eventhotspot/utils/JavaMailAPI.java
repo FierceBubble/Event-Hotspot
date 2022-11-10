@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
+
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -72,15 +74,19 @@ public class JavaMailAPI extends AsyncTask<Void,Void,Void>  {
 
         try {
             //Creating Message
+            /*InternetAddress[] cc = new InternetAddress[3];
+            cc[0] = new InternetAddress("diamondryancraft@gmail.com");
+            cc[1] = new InternetAddress("diamondryan.ml@gmail.com");
+            cc[2] = new InternetAddress("diamondryan.cn@gmail.com");
+            */
             MimeMessage mm = new MimeMessage(mSession);
-
-            mm.setFrom(new InternetAddress(EmailUtils.EMAIL));
+            mm.setFrom(new InternetAddress(EmailUtils.EMAIL, "UCSI Event Hotspot"));
             mm.addRecipient(Message.RecipientType.TO, new InternetAddress(mEmail));
+            //mm.addRecipients(Message.RecipientType.CC, cc);
             mm.setSubject(mSubject);
             mm.setText(mMessage);
             Transport.send(mm);
-
-        } catch (MessagingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return null;

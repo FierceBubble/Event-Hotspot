@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -47,25 +48,21 @@ import com.google.ar.sceneform.ux.TransformationSystem;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.ref.WeakReference;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import danielryansunjaya.finalyearproject.eventhotspot.models.UserModel;
 import danielryansunjaya.finalyearproject.eventhotspot.ui.EventFragment;
 
 
 public class MainActivity extends AppCompatActivity{
 
+    private static final int TIMER = 2000;
     private static final String TAG ="MainActivity";
     FirebaseAuth auth;
     FirebaseFirestore db;
@@ -113,7 +110,7 @@ public class MainActivity extends AppCompatActivity{
         db = FirebaseFirestore.getInstance();
         rtDB = FirebaseDatabase.getInstance();
 
-        insertemail = findViewById(R.id.insertEmail);
+        insertemail = findViewById(R.id.insertStudentID);
         insertpassword = findViewById(R.id.insertPassword);
         loginLayout = findViewById(R.id.loginLayout);
         mainLayout = findViewById(R.id.mainLayout);
@@ -160,19 +157,25 @@ public class MainActivity extends AppCompatActivity{
         initModels();
 
         // Create Fragments
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragmentLayout, new EventFragment());
-        ft.commit();
 
         fragmentContainer = findViewById(R.id.fragmentContainer);
         listAllEventBtn = findViewById(R.id.listAllEventBtn);
         listAllEventBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.fragmentLayout, new EventFragment());
+                ft.commit();
+
                 //sceneView.setVisibility(View.INVISIBLE);
                 isOnMap = false;
                 fragmentContainer.setVisibility(View.VISIBLE);
                 fragmentContainer_Profile.setVisibility(View.INVISIBLE);
+                new Handler().postDelayed(this::continueAnimation,TIMER);
+            }
+
+            public void continueAnimation(){
+                startAnimation();
             }
         });
 
@@ -185,21 +188,28 @@ public class MainActivity extends AppCompatActivity{
                 fragmentContainer.setVisibility(View.INVISIBLE);
                 fragmentContainer_Profile.setVisibility(View.INVISIBLE);
             }
-        });
 
-        FragmentTransaction ft_profile = getSupportFragmentManager().beginTransaction();
-        ft_profile.replace(R.id.fragmentLayout_Profile, new ProfileFragment());
-        ft_profile.commit();
+        });
 
         fragmentContainer_Profile = findViewById(R.id.fragmentContainer_Profile);
         profileBtn = findViewById(R.id.profileBtn);
         profileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FragmentTransaction ft_profile = getSupportFragmentManager().beginTransaction();
+                ft_profile.replace(R.id.fragmentLayout_Profile, new ProfileFragment());
+                ft_profile.commit();
+
                 //sceneView.setVisibility(View.INVISIBLE);
                 isOnMap = false;
                 fragmentContainer.setVisibility(View.INVISIBLE);
                 fragmentContainer_Profile.setVisibility(View.VISIBLE);
+
+                new Handler().postDelayed(this::continueAnimation,TIMER);
+            }
+
+            public void continueAnimation(){
+                startAnimation();
             }
         });
     }
@@ -211,7 +221,7 @@ public class MainActivity extends AppCompatActivity{
         blockC_stage = ModelRenderable.builder().setSource(this,Uri.parse("glbFiles/c.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
         blockD_stage = ModelRenderable.builder().setSource(this,Uri.parse("glbFiles/d.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
         blockG_stage = ModelRenderable.builder().setSource(this,Uri.parse("glbFiles/g.glb")).setIsFilamentGltf(true).setAsyncLoadEnabled(true).build();
-        Log.d("initModels", "All Models Successfully Built!");
+        Log.d( TAG+" [initModels]", "All Models Successfully Built!");
 
         loadModels();
     }
@@ -256,21 +266,21 @@ public class MainActivity extends AppCompatActivity{
                         createBuildingNode("Block G", blockG_renderable, blockG_stage,new Vector3(-0.4f, 0.65f, 0.5f));
 
 
-                        Log.d("MainActivity", "Model Successfully Placed on Screen!");
+                        Log.d(TAG+" loadModels", "Model Successfully Placed on Screen!");
 
                     } catch (ExecutionException | InterruptedException e) {
                         e.printStackTrace();
                     }
                     return null;
                 });
-        Log.d("MainActivity", "Model Successfully Loaded!");
+        Log.d(TAG+" loadModels", "Model Successfully Loaded!");
     }
 
     private void createBuildingNode(String name, ModelRenderable modelRenderable, CompletableFuture<ModelRenderable> stage, Vector3 infoCardPosition){
         stage.thenAccept(model->{
            addOtherNodetoUniversity(name, modelRenderable, infoCardPosition);
         });
-        Log.d("createBuildingNode", "Building "+name+" Added to Base!");
+        Log.d(TAG+" [createBuildingNode]", "Building "+name+" Added to Base!");
     }
 
 
@@ -300,7 +310,7 @@ public class MainActivity extends AppCompatActivity{
 
         transformationSystem.selectNode(university);
         scene.addChild(university);
-        Log.d("addNodeToScene", "Base Model Rendered!");
+        Log.d(TAG+" [addNodeToScene", "Base Model Rendered!");
         startAnimation();
     }
 
@@ -350,13 +360,13 @@ public class MainActivity extends AppCompatActivity{
             }
         });
         //university.addChild(otherBuilding);
-        Log.d("addOtherNodetoUniversity", "Building "+name+" Rendered!");
+        Log.d(TAG+" [addOtherNodetoUniversity]", "Building "+name+" Rendered!");
     }
 
     private void nodeTap(String name, Node parent, Vector3 infoCardPosition) {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         String nameTrim = name.replace("Block","").trim();
-        Log.d("Node Tapped", "Node "+nameTrim+" Tap!");
+        Log.d(TAG+" [Node Tapped]", "Node "+nameTrim+" Tap!");
         totalEvent = 0;
 
         ViewRenderable.builder()
@@ -387,7 +397,7 @@ public class MainActivity extends AppCompatActivity{
                                                     }
                                                     building_name.setText(name+" - Event Total: "+totalEvent);
                                                 }else{
-                                                    Log.w("FirebaseStore_RetrieveData", "Error getting documents.", task.getException());
+                                                    Log.w(TAG+" [FirebaseStore_RetrieveData]", "Error getting documents.", task.getException());
                                                 }
                                             }
                                         });
@@ -414,7 +424,7 @@ public class MainActivity extends AppCompatActivity{
         infoCard.setName("InfoCard: "+name);
         infoCard.setLocalScale(modelScale);
         infoCard.setLocalPosition(infoCardPosition);
-        Log.d("make_infoCard", "InfoCard "+name+" Created!");
+        Log.d(TAG+" [make_infoCard]", "InfoCard "+name+" Created!");
     }
 
     private void startAnimation(){
@@ -426,7 +436,7 @@ public class MainActivity extends AppCompatActivity{
         rotateAnimation.setTarget(university);
         rotateAnimation.setDuration(7000);
         rotateAnimation.start();
-        Log.d("Rotate Animation", "Animation Started!");
+        Log.d(TAG+" [Rotate Animation]", "Animation Started!");
     }
 
     private void stopAnimation(){
@@ -435,11 +445,11 @@ public class MainActivity extends AppCompatActivity{
         }
         rotateAnimation.cancel();
         rotateAnimation = null;
-        Log.d("Rotate Animation", "Animation Stopped!");
+        Log.d(TAG+" [Rotate Animation]", "Animation Stopped!");
     }
 
     private void userLogin(){
-        String email = insertemail.getText().toString();
+        String email = insertemail.getText().toString() + "@ucsiuniversity.edu.my";
         String password = insertpassword.getText().toString();
 
         if(TextUtils.isEmpty(email)){
@@ -464,9 +474,10 @@ public class MainActivity extends AppCompatActivity{
                             isOnMap = true;
                             loginLayout.setVisibility(View.INVISIBLE);
                             mainLayout.setVisibility(View.VISIBLE);
-                            Log.d("userLogin", "Login Success!");
+                            Log.d(TAG+" [userLogin]", "Login Success!");
                         }else {
-                            Log.d("userLogin", "Login Failed!");
+                            Toast.makeText(MainActivity.this, "Student ID or Password is wrong!",Toast.LENGTH_SHORT).show();
+                            Log.d(TAG+" [userLogin]", "Login Failed!");
                         }
                     }
                 });
