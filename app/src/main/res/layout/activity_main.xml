@@ -7,15 +7,26 @@
     android:background="@color/arfragment_bckg"
     tools:context=".MainActivity">
 
-    <com.google.ar.sceneform.SceneView
-        android:id="@+id/arFragment"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="#071737"
-        app:layout_constraintBottom_toTopOf="@+id/mainLayout"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout_arFragment"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.ar.sceneform.SceneView
+            android:id="@+id/arFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/arfragment_scene_bckg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/fragmentContainer"
@@ -117,57 +128,54 @@
         android:visibility="visible"
         android:paddingTop="16dp"
         android:paddingBottom="32dp"
+        android:focusableInTouchMode="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Student ID"
-            android:layout_marginBottom="4dp"
-            android:textColor="@color/white"/>
 
         <EditText
             android:id="@+id/insertStudentID"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
             android:ems="10"
             android:textAlignment="center"
             android:maxLength="10"
             android:inputType="number"
-            android:textColor="@color/white"
-            android:layout_marginBottom="8dp"/>
+            android:textColor="@color/highlights_lightblue"
+            android:background="@drawable/field_selector"
+            android:layout_marginBottom="10dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:hint="Student ID"
+            android:textColorHint="#27B0E7FD"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Password"
-            android:layout_marginBottom="4dp"
-            android:textColor="@color/white"/>
 
         <EditText
             android:id="@+id/insertPassword"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
             android:ems="10"
             android:textAlignment="center"
             android:inputType="textPassword"
-            android:textColor="@color/white"
+            android:textColor="@color/highlights_lightblue"
+            android:background="@drawable/field_selector"
             android:layout_marginBottom="16dp"
-            android:fontFamily="sans-serif"/>
+            android:fontFamily="sans-serif"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:hint="Password"
+            android:textColorHint="#26B0E7FD"/>
 
 
         <RelativeLayout
             android:id="@+id/login_button_layout"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
@@ -179,9 +187,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="LOGIN"
+                android:text="Sign-In"
                 android:textColor="#B0E7FD"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <com.airbnb.lottie.LottieAnimationView
@@ -201,7 +209,7 @@
                 android:layout_centerInParent="true"
                 android:visibility="gone"
                 app:lottie_autoPlay="false"
-                app:lottie_loop="true"
+                app:lottie_loop="false"
                 app:lottie_rawRes="@raw/check" />
 
             <com.airbnb.lottie.LottieAnimationView
@@ -223,14 +231,14 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:textColor="@color/white"/>
+            android:textColor="@color/highlights_lightblue"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="No account? Sign-up Here!"
             android:id="@+id/signupText"
-            android:textColor="@color/white"
+            android:textColor="@color/highlights_lightblue"
             android:layout_gravity="center_horizontal"/>
 
 

@@ -10,4 +10,6 @@
     <string name="signup_form_passconfirm">Confirm Password</string>
     <string name="signup_form_btn">Sign-Up</string>
 
+    <!-- SIgnIn Layout Strings-->
+
 </resources>

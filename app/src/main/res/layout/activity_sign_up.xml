@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/form_layout_bckg"
+    android:id="@+id/signup_layout"
+    android:focusableInTouchMode="true"
     tools:context=".SignUpActivity">
 
     <TextView
@@ -26,7 +28,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="32dp"
+        android:labelFor="@id/inputName"
         android:text="@string/signup_form_name"
         android:textColor="@color/form_text_and_highlight_blue"
         android:textSize="16sp"
@@ -53,14 +56,16 @@
             android:background="@drawable/field_selector"
             android:drawableStart="@drawable/custom_ic_person"
             android:drawablePadding="12dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
             android:ems="10"
             android:inputType="textPersonName"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:textColor="@color/form_text_and_highlight_blue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="DuplicateSpeakableTextCheck"
+            android:importantForAutofill="no" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/name_field_warning"
@@ -85,6 +90,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/signup_form_id"
+        android:labelFor="@id/inputID"
         android:textColor="@color/form_text_and_highlight_blue"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/textView2"
@@ -104,18 +110,20 @@
             android:id="@+id/inputID"
             android:layout_width="0dp"
             android:layout_height="60dp"
-            android:ems="10"
-            android:inputType="number"
-            android:maxLength="10"
-            android:textColor="@color/form_text_and_highlight_blue"
             android:background="@drawable/field_selector"
             android:drawableStart="@drawable/custom_ic_number"
             android:drawablePadding="12dp"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="10"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
+            android:textColor="@color/form_text_and_highlight_blue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="DuplicateSpeakableTextCheck" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/id_field_warning"
@@ -139,6 +147,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/signup_form_programme"
+        android:labelFor="@id/inputProgramme"
         android:textColor="@color/form_text_and_highlight_blue"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/textView3"
@@ -159,17 +168,19 @@
             android:id="@+id/inputProgramme"
             android:layout_width="0dp"
             android:layout_height="60dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:textColor="@color/form_text_and_highlight_blue"
             android:background="@drawable/field_selector"
             android:drawableStart="@drawable/custom_ic_school"
             android:drawablePadding="12dp"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
+            android:textColor="@color/form_text_and_highlight_blue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="DuplicateSpeakableTextCheck" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/programme_field_warning"
@@ -194,6 +205,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/signup_form_pass"
+        android:labelFor="@id/inputPassword"
         android:textColor="@color/form_text_and_highlight_blue"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/textView6"
@@ -214,18 +226,20 @@
             android:id="@+id/inputPassword"
             android:layout_width="0dp"
             android:layout_height="60dp"
-            android:ems="10"
-            android:fontFamily="sans-serif"
-            android:inputType="textPassword"
-            android:textColor="@color/form_text_and_highlight_blue"
             android:background="@drawable/field_selector"
             android:drawableStart="@drawable/custom_ic_lock"
             android:drawablePadding="12dp"
+            android:ems="10"
+            android:fontFamily="sans-serif"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
+            android:textColor="@color/form_text_and_highlight_blue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="DuplicateSpeakableTextCheck" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/password_field_warning"
@@ -249,6 +263,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/signup_form_passconfirm"
+        android:labelFor="@id/inputPassConfirm"
         android:textColor="@color/form_text_and_highlight_blue"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/textView8"
@@ -269,18 +284,20 @@
             android:id="@+id/inputPassConfirm"
             android:layout_width="0dp"
             android:layout_height="60dp"
-            android:ems="10"
-            android:fontFamily="sans-serif"
-            android:inputType="textPassword"
-            android:textColor="@color/form_text_and_highlight_blue"
             android:background="@drawable/field_selector"
             android:drawableStart="@drawable/custom_ic_lock_hollow"
             android:drawablePadding="12dp"
+            android:ems="10"
+            android:fontFamily="sans-serif"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
+            android:textColor="@color/form_text_and_highlight_blue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="DuplicateSpeakableTextCheck" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/confirmPass_field_warning"
@@ -310,7 +327,7 @@
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/linearLayout8"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/linearLayout8"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout8"
         app:layout_constraintVertical_bias="0.0">

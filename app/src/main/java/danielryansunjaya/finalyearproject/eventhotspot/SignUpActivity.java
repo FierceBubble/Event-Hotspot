@@ -2,6 +2,7 @@ package danielryansunjaya.finalyearproject.eventhotspot;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
@@ -13,7 +14,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,7 +28,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.jetbrains.annotations.NotNull;
-
 
 import danielryansunjaya.finalyearproject.eventhotspot.models.UserModel;
 import danielryansunjaya.finalyearproject.eventhotspot.utils.JavaMailAPI;
@@ -45,6 +44,7 @@ public class SignUpActivity extends AppCompatActivity {
     private static final int TIMER = 2000;
     TextView signup_btn_text;
     RelativeLayout signup_btn_layout;
+    ConstraintLayout signup_layout;
     LottieAnimationView signup_btn_animation_loading,
             signup_btn_animation_check, signup_btn_animation_cross,
             name_warning, id_warning, programme_warning,
@@ -62,6 +62,7 @@ public class SignUpActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         rtDB = FirebaseDatabase.getInstance();
 
+        signup_layout = findViewById(R.id.signup_layout);
         inputName = findViewById(R.id.inputName);
         inputID = findViewById(R.id.inputID);
         inputProgramme = findViewById(R.id.inputProgramme);
@@ -82,25 +83,12 @@ public class SignUpActivity extends AppCompatActivity {
         signup_btn_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                name_warning.setVisibility(View.GONE);
-                name_warning.pauseAnimation();
-                id_warning.setVisibility(View.GONE);
-                id_warning.pauseAnimation();
-                programme_warning.setVisibility(View.GONE);
-                programme_warning.pauseAnimation();
-                password_warning.setVisibility(View.GONE);
-                password_warning.pauseAnimation();
-                passConfirm_warning.setVisibility(View.GONE);
-                passConfirm_warning.pauseAnimation();
-
-                inputID.setHint("");
-                inputPassword.setHint("");
-                inputPassConfirm.setHint("");
+                signup_layout.requestFocus();
+                resetAllState();
 
                 signup_btn_text.setVisibility(View.GONE);
                 signup_btn_animation_loading.setVisibility(View.VISIBLE);
                 signup_btn_animation_loading.playAnimation();
-
                 new Handler().postDelayed(this::insertInfo,TIMER);
             }
 
@@ -114,7 +102,31 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
+    private void resetAllState() {
+        name_warning.setVisibility(View.GONE);
+        name_warning.pauseAnimation();
+        id_warning.setVisibility(View.GONE);
+        id_warning.pauseAnimation();
+        programme_warning.setVisibility(View.GONE);
+        programme_warning.pauseAnimation();
+        password_warning.setVisibility(View.GONE);
+        password_warning.pauseAnimation();
+        passConfirm_warning.setVisibility(View.GONE);
+        passConfirm_warning.pauseAnimation();
 
+        inputID.setHint("");
+        inputPassword.setHint("");
+        inputPassConfirm.setHint("");
+
+        inputName.setActivated(false);
+        inputID.setActivated(false);
+        inputProgramme.setActivated(false);
+        inputPassword.setActivated(false);
+        inputPassConfirm.setActivated(false);
+    }
+
+
+    @SuppressLint("UseCompatLoadingForDrawables")
     private Boolean noEmptyFields(){
         name = inputName.getText().toString();
         id = inputID.getText().toString();
@@ -126,10 +138,12 @@ public class SignUpActivity extends AppCompatActivity {
         if(TextUtils.isEmpty(name)){
             name_warning.setVisibility(View.VISIBLE);
             name_warning.playAnimation();
+            inputName.setActivated(true);
         }
         if(TextUtils.isEmpty(id)){
             id_warning.setVisibility(View.VISIBLE);
             id_warning.playAnimation();
+            inputID.setActivated(true);
         }
         if(id.length()<10){
             inputID.setText("");
@@ -137,15 +151,17 @@ public class SignUpActivity extends AppCompatActivity {
             inputID.setHintTextColor(ContextCompat.getColor(this, R.color.form_text_and_highlight_orange));
             id_warning.setVisibility(View.VISIBLE);
             id_warning.playAnimation();
+            inputID.setActivated(true);
         }
         if(TextUtils.isEmpty(programme)){
             programme_warning.setVisibility(View.VISIBLE);
             programme_warning.playAnimation();
-
+            inputProgramme.setActivated(true);
         }
         if(TextUtils.isEmpty(password)){
             password_warning.setVisibility(View.VISIBLE);
             password_warning.playAnimation();
+            inputPassword.setActivated(true);
         }
         if(password.length()<6){
             inputPassword.setText("");
@@ -153,6 +169,7 @@ public class SignUpActivity extends AppCompatActivity {
             inputPassword.setHintTextColor(ContextCompat.getColor(this, R.color.form_text_and_highlight_orange));
             password_warning.setVisibility(View.VISIBLE);
             password_warning.playAnimation();
+            inputPassword.setActivated(true);
         }
         if(!passConfirm.equals(password)){
             inputPassConfirm.setText("");
@@ -160,6 +177,7 @@ public class SignUpActivity extends AppCompatActivity {
             inputPassConfirm.setHintTextColor(ContextCompat.getColor(this, R.color.form_text_and_highlight_orange));
             passConfirm_warning.setVisibility(View.VISIBLE);
             passConfirm_warning.playAnimation();
+            inputPassConfirm.setActivated(true);
         }
 
         if(TextUtils.isEmpty(name)||TextUtils.isEmpty(id)||

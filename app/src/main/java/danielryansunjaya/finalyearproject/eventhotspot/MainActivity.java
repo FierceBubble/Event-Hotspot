@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity{
     FirebaseFirestore db;
     FirebaseDatabase rtDB;
     TextView signupText, login_btn_text;
-    EditText insertemail,insertpassword;
+    EditText insertEmail, insertPassword;
     Button listAllEventBtn, profileBtn, mapBtn;
     LinearLayout loginLayout, fragmentContainer, fragmentContainer_Profile;
     ConstraintLayout mainLayout;
@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity{
     private TransformationSystem transformationSystem;
     private SceneView sceneView;
     private Scene scene;
+    ConstraintLayout.LayoutParams layoutParams;
+    ConstraintLayout constraintLayout_arFragment;
     ModelRenderable base_renderable;
     ModelRenderable blockA_renderable;
     ModelRenderable blockB_renderable;
@@ -116,10 +118,11 @@ public class MainActivity extends AppCompatActivity{
         db = FirebaseFirestore.getInstance();
         rtDB = FirebaseDatabase.getInstance();
 
-        insertemail = findViewById(R.id.insertStudentID);
-        insertpassword = findViewById(R.id.insertPassword);
+        insertEmail = findViewById(R.id.insertStudentID);
+        insertPassword = findViewById(R.id.insertPassword);
         loginLayout = findViewById(R.id.loginLayout);
         mainLayout = findViewById(R.id.mainLayout);
+        constraintLayout_arFragment = findViewById(R.id.constraintLayout_arFragment);
 
         login_btn_text = findViewById(R.id.login_button_text);
         login_btn_animation_loading = findViewById(R.id.login_button_animation_loading);
@@ -129,6 +132,10 @@ public class MainActivity extends AppCompatActivity{
         login_btn_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                insertEmail.setActivated(false);
+                insertPassword.setActivated(false);
+
+                loginLayout.requestFocus();
                 login_btn_text.setVisibility(View.GONE);
                 login_btn_animation_loading.setVisibility(View.VISIBLE);
                 login_btn_animation_loading.playAnimation();
@@ -136,28 +143,13 @@ public class MainActivity extends AppCompatActivity{
             }
 
             private void checkInfo() {
-
                 if(noEmptyField()){
-                    login_btn_animation_loading.setVisibility(View.GONE);
-                    login_btn_animation_loading.pauseAnimation();
-                    login_btn_animation_check.setVisibility(View.VISIBLE);
-                    login_btn_animation_check.playAnimation();
+                    userLogin();
                 }else{
-                    login_btn_animation_loading.setVisibility(View.GONE);
-                    login_btn_animation_loading.pauseAnimation();
-                    login_btn_animation_cross.setVisibility(View.VISIBLE);
-                    login_btn_animation_cross.playAnimation();
-                    new Handler().postDelayed(this::revertState, 3000);
+                    loginFailState();
                 }
             }
 
-            private void revertState() {
-                login_btn_animation_cross.setVisibility(View.GONE);
-                login_btn_animation_cross.pauseAnimation();
-                login_btn_animation_check.setVisibility(View.GONE);
-                login_btn_animation_check.pauseAnimation();
-                login_btn_text.setVisibility(View.VISIBLE);
-            }
         });
 
 
@@ -180,7 +172,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void updateDrawState(TextPaint ds){
                 super.updateDrawState(ds);
-                ds.setColor(Color.BLUE);
+                ds.setColor(Color.WHITE);
             }
         };
         ss.setSpan(ss_signupPage,20,24, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -343,7 +335,7 @@ public class MainActivity extends AppCompatActivity{
         university.setRenderable(model);
         university.setName("UCSI University");
         university.setLocalScale(modelScale);
-        university.setLocalPosition(new Vector3(-0.03f, -0.3f, -1.0f));
+        university.setLocalPosition(new Vector3(-0.03f, -0.5f, -1.0f));
         university.setOnTouchListener(new Node.OnTouchListener() {
             @Override
             public boolean onTouch(HitTestResult hitTestResult, MotionEvent motionEvent) {
@@ -496,28 +488,28 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private Boolean noEmptyField(){
-        email = insertemail.getText().toString() + "@ucsiuniversity.edu.my";
-        password = insertpassword.getText().toString();
+        email = insertEmail.getText().toString() + "@ucsiuniversity.edu.my";
+        password = insertPassword.getText().toString();
 
-        if(TextUtils.isEmpty(email)){
-            Toast.makeText(this, "Email is empty!",Toast.LENGTH_SHORT).show();
+        if(TextUtils.isEmpty(insertEmail.getText().toString())){
+            insertEmail.setActivated(true);
+            //Toast.makeText(this, "Email is empty!",Toast.LENGTH_SHORT).show();
         }
-        if(email.length()<10){
-            Toast.makeText(this, "ID should be more than 10 characters!",Toast.LENGTH_SHORT).show();
+        if(insertEmail.getText().toString().length()<10){
+            insertEmail.setActivated(true);
+            //Toast.makeText(this, "ID should be more than 10 characters!",Toast.LENGTH_SHORT).show();
         }
         if(TextUtils.isEmpty(password)){
-            Toast.makeText(this, "Password is empty!",Toast.LENGTH_SHORT).show();
+            insertPassword.setActivated(true);
+            //Toast.makeText(this, "Password is empty!",Toast.LENGTH_SHORT).show();
         }
         if(password.length()<6){
-            Toast.makeText(this, "Password should be more than 6 characters!",Toast.LENGTH_SHORT).show();
+            insertPassword.setActivated(true);
+            //Toast.makeText(this, "Password should be more than 6 characters!",Toast.LENGTH_SHORT).show();
         }
 
-        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password) ||
-                password.length()<6 || email.length()<10){
-            return false;
-        }else{
-            return true;
-        }
+        return !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) &&
+                password.length() >= 6 && email.length() >= 10;
     }
 
     private void userLogin(){
@@ -527,17 +519,53 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            isLogin = true;
-                            isOnMap = true;
-                            loginLayout.setVisibility(View.INVISIBLE);
-                            mainLayout.setVisibility(View.VISIBLE);
+                            loginSuccessState();
                             Log.d(TAG+" [userLogin]", "Login Success!");
                         }else {
-                            Toast.makeText(MainActivity.this, "Student ID or Password is wrong!",Toast.LENGTH_SHORT).show();
+                            loginFailState();
+                            insertEmail.setActivated(true);
+                            insertPassword.setActivated(true);
+                            //Toast.makeText(MainActivity.this, "Student ID or Password is wrong!",Toast.LENGTH_SHORT).show();
                             Log.d(TAG+" [userLogin]", "Login Failed!");
                         }
                     }
                 });
+    }
+
+    private void layoutPostLogin(){
+        isLogin = true;
+        isOnMap = true;
+        loginLayout.setVisibility(View.INVISIBLE);
+        mainLayout.setVisibility(View.VISIBLE);
+        layoutParams = (ConstraintLayout.LayoutParams) constraintLayout_arFragment.getLayoutParams();
+        layoutParams.height = ConstraintLayout.LayoutParams.MATCH_PARENT;
+        layoutParams.width = ConstraintLayout.LayoutParams.MATCH_PARENT;
+        sceneView.setLayoutParams(layoutParams);
+        new Handler().postDelayed(this::revertState, 3000);
+    }
+
+    private void loginSuccessState(){
+        login_btn_animation_loading.setVisibility(View.GONE);
+        login_btn_animation_loading.pauseAnimation();
+        login_btn_animation_check.setVisibility(View.VISIBLE);
+        login_btn_animation_check.playAnimation();
+        new Handler().postDelayed(this::layoutPostLogin, 2000);
+    }
+
+    private void loginFailState(){
+        login_btn_animation_loading.setVisibility(View.GONE);
+        login_btn_animation_loading.pauseAnimation();
+        login_btn_animation_cross.setVisibility(View.VISIBLE);
+        login_btn_animation_cross.playAnimation();
+        new Handler().postDelayed(this::revertState, 3000);
+    }
+
+    private void revertState(){
+        login_btn_animation_cross.setVisibility(View.GONE);
+        login_btn_animation_cross.pauseAnimation();
+        login_btn_animation_check.setVisibility(View.GONE);
+        login_btn_animation_check.pauseAnimation();
+        login_btn_text.setVisibility(View.VISIBLE);
     }
 
 
@@ -557,3 +585,5 @@ public class MainActivity extends AppCompatActivity{
         sceneView.pause();
     }
 }
+
+
