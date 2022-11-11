@@ -115,7 +115,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    public Boolean noEmptyFields(){
+    private Boolean noEmptyFields(){
         name = inputName.getText().toString();
         id = inputID.getText().toString();
         email = inputID.getText().toString()+"@ucsiuniversity.edu.my";
@@ -134,7 +134,7 @@ public class SignUpActivity extends AppCompatActivity {
         if(id.length()<10){
             inputID.setText("");
             inputID.setHint("ID too short!");
-            inputID.setHintTextColor(ContextCompat.getColor(this, R.color.highlights_orange));
+            inputID.setHintTextColor(ContextCompat.getColor(this, R.color.form_text_and_highlight_orange));
             id_warning.setVisibility(View.VISIBLE);
             id_warning.playAnimation();
         }
@@ -150,14 +150,14 @@ public class SignUpActivity extends AppCompatActivity {
         if(password.length()<6){
             inputPassword.setText("");
             inputPassword.setHint("Password too short!");
-            inputPassword.setHintTextColor(ContextCompat.getColor(this, R.color.highlights_orange));
+            inputPassword.setHintTextColor(ContextCompat.getColor(this, R.color.form_text_and_highlight_orange));
             password_warning.setVisibility(View.VISIBLE);
             password_warning.playAnimation();
         }
         if(!passConfirm.equals(password)){
             inputPassConfirm.setText("");
             inputPassConfirm.setHint("They are different!");
-            inputPassConfirm.setHintTextColor(ContextCompat.getColor(this, R.color.highlights_orange));
+            inputPassConfirm.setHintTextColor(ContextCompat.getColor(this, R.color.form_text_and_highlight_orange));
             passConfirm_warning.setVisibility(View.VISIBLE);
             passConfirm_warning.playAnimation();
         }
@@ -166,7 +166,7 @@ public class SignUpActivity extends AppCompatActivity {
                 TextUtils.isEmpty(programme)||TextUtils.isEmpty(password)||
                 TextUtils.isEmpty(passConfirm)||id.length()<10||
                 password.length()<6||!passConfirm.equals(password)){
-            Toast.makeText(this, "Please recheck fields!",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Please recheck fields!",Toast.LENGTH_SHORT).show();
             return false;
         }else{
             return true;
@@ -174,7 +174,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    public void createAccount(){
+    private void createAccount(){
         query = rtDB.getReference().child("login").orderByChild("studentID").equalTo(id);
         valueEventListener = new ValueEventListener() {
             @Override
@@ -187,9 +187,9 @@ public class SignUpActivity extends AppCompatActivity {
                     id_warning.playAnimation();
                     inputID.setText("");
                     inputID.setHint("ACCOUNT EXIST!");
-                    inputID.setHintTextColor(ContextCompat.getColor(SignUpActivity.this, R.color.highlights_orange));
+                    inputID.setHintTextColor(ContextCompat.getColor(SignUpActivity.this, R.color.form_text_and_highlight_orange));
 
-                    Toast.makeText(SignUpActivity.this, "Account with the ID exist!\nPlease login instead!",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(SignUpActivity.this, "Account with the ID exist!\nPlease login instead!",Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -201,7 +201,7 @@ public class SignUpActivity extends AppCompatActivity {
         query.addListenerForSingleValueEvent(valueEventListener);
     }
 
-    public void insertingDB(){
+    private void insertingDB(){
         query.removeEventListener(valueEventListener);
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -223,7 +223,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    public void notifyUser(){
+    private void notifyUser(){
         String subject = "Account created successfully!";
         String message = "Dear "+name+",\n\n"+
                 "Your account has been created successfully with the details as such:"+
@@ -248,7 +248,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
-    public void failCreateAccount(){
+    private void failCreateAccount(){
         signup_btn_animation_loading.pauseAnimation();
         signup_btn_animation_loading.setVisibility(View.GONE);
         signup_btn_animation_cross.setVisibility(View.VISIBLE);
@@ -256,7 +256,7 @@ public class SignUpActivity extends AppCompatActivity {
         new Handler().postDelayed(this::revertState,TIMER+3000);
     }
 
-    public void revertState(){
+    private void revertState(){
         signup_btn_animation_check.pauseAnimation();
         signup_btn_animation_check.setVisibility(View.GONE);
         signup_btn_animation_cross.pauseAnimation();
@@ -270,7 +270,7 @@ public class SignUpActivity extends AppCompatActivity {
         signup_btn_animation_cross.pauseAnimation();
         signup_btn_animation_cross.setVisibility(View.GONE);
         signup_btn_text.setVisibility(View.VISIBLE);
-        Toast.makeText(SignUpActivity.this, "SignUp Success!",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(SignUpActivity.this, "SignUp Success!",Toast.LENGTH_SHORT).show();
         finish();
     }
 }

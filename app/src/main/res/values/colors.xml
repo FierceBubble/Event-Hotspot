@@ -9,11 +9,28 @@
     <color name="white">#FFFFFFFF</color>
 
     <!-- Event Hotspot Main Color Palette-->
+    <color name="background_darkestblue">#020a2f</color>
+    <color name="background_darkestblue_lighttint">#041250</color>
     <color name="main_bckg">#001844</color>
     <color name="background_darkBlue">#032545</color>
     <color name="button_dark_blue">#053461</color>
     <color name="layout_darkblue">#0857A1</color>
     <color name="highlights_lightblue">#B0E7FD</color>
     <color name="highlights_orange">#FF8E3A</color>
+
+    <!-- Form Color Palette-->
+    <color name="form_layout_bckg">#020a2f</color>
+    <color name="form_inputField_background">#041459</color>
+    <color name="form_submit_btn_background">#051768</color>
+    <color name="form_text_and_highlight_blue">#B0E7FD</color>
+    <color name="form_text_and_highlight_orange">#FF8E3A</color>
+
+    <!-- Icon Color Palette-->
+    <color name="ic_color">#020a2f</color>
+    <color name="ic_color_focused">#B0E7FD</color>
+
+    <!-- SceneView color Palette-->
+    <color name="arfragment_bckg">#020a2f</color>
+    <color name="arfragment_scene_bckg">#071737</color>
 
 </resources>

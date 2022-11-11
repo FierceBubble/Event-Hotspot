@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/main_bckg"
+    android:background="@color/arfragment_bckg"
     tools:context=".MainActivity">
 
     <com.google.ar.sceneform.SceneView
         android:id="@+id/arFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/background_darkBlue"
+        android:background="#071737"
         app:layout_constraintBottom_toTopOf="@+id/mainLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,7 +112,7 @@
         android:id="@+id/loginLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/layout_darkblue"
+        android:background="@drawable/login_layout_bckg"
         android:orientation="vertical"
         android:visibility="visible"
         android:paddingTop="16dp"
@@ -163,12 +163,58 @@
             android:layout_marginBottom="16dp"
             android:fontFamily="sans-serif"/>
 
-        <Button
-            android:id="@+id/loginBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+
+        <RelativeLayout
+            android:id="@+id/login_button_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
             android:layout_gravity="center_horizontal"
-            android:text="Login" />
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/blue_btn_bckg_ripple"
+            android:clickable="true">
+
+            <TextView
+                android:id="@+id/login_button_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="LOGIN"
+                android:textColor="#B0E7FD"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/login_button_animation_loading"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                app:lottie_autoPlay="false"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/loading" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/login_button_animation_check"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                app:lottie_autoPlay="false"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/check" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/login_button_animation_cross"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                app:lottie_autoPlay="false"
+                app:lottie_loop="false"
+                app:lottie_rawRes="@raw/cross" />
+
+        </RelativeLayout>
 
         <TextView
             android:layout_width="wrap_content"

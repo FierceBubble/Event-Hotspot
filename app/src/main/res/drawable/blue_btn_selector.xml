@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="true" android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/form_submit_btn_background"/>
+            <corners android:radius="35dp"/>
+            <stroke android:color="@color/form_text_and_highlight_blue" android:width="3dp" />
+        </shape>
+    </item>
+
+    <item android:state_enabled="true" >
+        <shape android:shape="rectangle">
+            <solid android:color="@color/form_submit_btn_background"/>
+            <corners android:radius="35dp"/>
+            <stroke android:color="@color/form_submit_btn_background" android:width="3dp"/>
+        </shape>
+    </item>
+</selector>

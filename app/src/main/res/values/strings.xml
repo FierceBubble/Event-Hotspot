@@ -1,5 +1,13 @@
 <resources>
     <string name="app_name">Event Hotspot</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--SignUp Form Strings-->
+    <string name="signup_form_title">CREATE ACCOUNT</string>
+    <string name="signup_form_name">Student Name</string>
+    <string name="signup_form_id">Student ID</string>
+    <string name="signup_form_programme">Programme</string>
+    <string name="signup_form_pass">Create Password</string>
+    <string name="signup_form_passconfirm">Confirm Password</string>
+    <string name="signup_form_btn">Sign-Up</string>
+
 </resources>

@@ -26,9 +26,11 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -67,11 +69,15 @@ public class MainActivity extends AppCompatActivity{
     FirebaseAuth auth;
     FirebaseFirestore db;
     FirebaseDatabase rtDB;
-    TextView signupText;
+    TextView signupText, login_btn_text;
     EditText insertemail,insertpassword;
-    Button loginBtn, listAllEventBtn, profileBtn, mapBtn;
+    Button listAllEventBtn, profileBtn, mapBtn;
     LinearLayout loginLayout, fragmentContainer, fragmentContainer_Profile;
     ConstraintLayout mainLayout;
+    private String email, password;
+    RelativeLayout login_btn_layout;
+    LottieAnimationView login_btn_animation_loading, login_btn_animation_check,
+            login_btn_animation_cross;
 
     @Nullable private ObjectAnimator rotateAnimation = null;
     private Vector3 modelScale = new Vector3(0.3f,0.3f,0.3f);
@@ -114,13 +120,54 @@ public class MainActivity extends AppCompatActivity{
         insertpassword = findViewById(R.id.insertPassword);
         loginLayout = findViewById(R.id.loginLayout);
         mainLayout = findViewById(R.id.mainLayout);
-        loginBtn = findViewById(R.id.loginBtn);
+
+        login_btn_text = findViewById(R.id.login_button_text);
+        login_btn_animation_loading = findViewById(R.id.login_button_animation_loading);
+        login_btn_animation_check = findViewById(R.id.login_button_animation_check);
+        login_btn_animation_cross = findViewById(R.id.login_button_animation_cross);
+        login_btn_layout = findViewById(R.id.login_button_layout);
+        login_btn_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                login_btn_text.setVisibility(View.GONE);
+                login_btn_animation_loading.setVisibility(View.VISIBLE);
+                login_btn_animation_loading.playAnimation();
+                new Handler().postDelayed(this::checkInfo,3000);
+            }
+
+            private void checkInfo() {
+
+                if(noEmptyField()){
+                    login_btn_animation_loading.setVisibility(View.GONE);
+                    login_btn_animation_loading.pauseAnimation();
+                    login_btn_animation_check.setVisibility(View.VISIBLE);
+                    login_btn_animation_check.playAnimation();
+                }else{
+                    login_btn_animation_loading.setVisibility(View.GONE);
+                    login_btn_animation_loading.pauseAnimation();
+                    login_btn_animation_cross.setVisibility(View.VISIBLE);
+                    login_btn_animation_cross.playAnimation();
+                    new Handler().postDelayed(this::revertState, 3000);
+                }
+            }
+
+            private void revertState() {
+                login_btn_animation_cross.setVisibility(View.GONE);
+                login_btn_animation_cross.pauseAnimation();
+                login_btn_animation_check.setVisibility(View.GONE);
+                login_btn_animation_check.pauseAnimation();
+                login_btn_text.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+        /*loginBtn = findViewById(R.id.loginBtn);
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 userLogin();
             }
-        });
+        });*/
         signupText = findViewById(R.id.signupText);
         String signupTextv = "No Account? Sign-up Here!";
         SpannableString ss = new SpannableString(signupTextv);
@@ -448,22 +495,32 @@ public class MainActivity extends AppCompatActivity{
         Log.d(TAG+" [Rotate Animation]", "Animation Stopped!");
     }
 
-    private void userLogin(){
-        String email = insertemail.getText().toString() + "@ucsiuniversity.edu.my";
-        String password = insertpassword.getText().toString();
+    private Boolean noEmptyField(){
+        email = insertemail.getText().toString() + "@ucsiuniversity.edu.my";
+        password = insertpassword.getText().toString();
 
         if(TextUtils.isEmpty(email)){
             Toast.makeText(this, "Email is empty!",Toast.LENGTH_SHORT).show();
-            return;
+        }
+        if(email.length()<10){
+            Toast.makeText(this, "ID should be more than 10 characters!",Toast.LENGTH_SHORT).show();
         }
         if(TextUtils.isEmpty(password)){
             Toast.makeText(this, "Password is empty!",Toast.LENGTH_SHORT).show();
-            return;
         }
         if(password.length()<6){
             Toast.makeText(this, "Password should be more than 6 characters!",Toast.LENGTH_SHORT).show();
-            return;
         }
+
+        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password) ||
+                password.length()<6 || email.length()<10){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    private void userLogin(){
 
         auth.signInWithEmailAndPassword(email,password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
