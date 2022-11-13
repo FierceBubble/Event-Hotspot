@@ -2,12 +2,16 @@ package danielryansunjaya.finalyearproject.eventhotspot;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -50,7 +54,11 @@ import com.google.ar.sceneform.ux.TransformationSystem;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -59,25 +67,29 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import danielryansunjaya.finalyearproject.eventhotspot.models.UserModel;
 import danielryansunjaya.finalyearproject.eventhotspot.ui.EventFragment;
+import danielryansunjaya.finalyearproject.eventhotspot.utils.JavaMailAPI;
 
 
 public class MainActivity extends AppCompatActivity{
 
     private static final int TIMER = 2000;
     private static final String TAG ="MainActivity";
+    private String email, password;
     FirebaseAuth auth;
     FirebaseFirestore db;
     FirebaseDatabase rtDB;
-    TextView signupText, login_btn_text;
-    EditText insertEmail, insertPassword;
+    TextView signupText, login_btn_text, forgotPass_text;
+    EditText insertEmail, insertPassword, insertID_forgotPass;
     Button listAllEventBtn, profileBtn, mapBtn;
+    MotionLayout main_motionLayout;
     LinearLayout loginLayout, fragmentContainer, fragmentContainer_Profile;
     ConstraintLayout mainLayout;
-    private String email, password;
-    RelativeLayout login_btn_layout;
+    RelativeLayout login_btn_layout, forgot_btn_layout;
     LottieAnimationView login_btn_animation_loading, login_btn_animation_check,
-            login_btn_animation_cross;
+            login_btn_animation_cross, forgot_btn_animation_loading, forgot_btn_animation_check,
+            forgot_btn_animation_cross ;
 
     @Nullable private ObjectAnimator rotateAnimation = null;
     private Vector3 modelScale = new Vector3(0.3f,0.3f,0.3f);
@@ -85,8 +97,6 @@ public class MainActivity extends AppCompatActivity{
     private TransformationSystem transformationSystem;
     private SceneView sceneView;
     private Scene scene;
-    ConstraintLayout.LayoutParams layoutParams;
-    ConstraintLayout constraintLayout_arFragment;
     ModelRenderable base_renderable;
     ModelRenderable blockA_renderable;
     ModelRenderable blockB_renderable;
@@ -122,8 +132,8 @@ public class MainActivity extends AppCompatActivity{
         insertPassword = findViewById(R.id.insertPassword);
         loginLayout = findViewById(R.id.loginLayout);
         mainLayout = findViewById(R.id.mainLayout);
-        constraintLayout_arFragment = findViewById(R.id.constraintLayout_arFragment);
 
+        main_motionLayout = findViewById(R.id.mainActivity_motionLayout);
         login_btn_text = findViewById(R.id.login_button_text);
         login_btn_animation_loading = findViewById(R.id.login_button_animation_loading);
         login_btn_animation_check = findViewById(R.id.login_button_animation_check);
@@ -136,6 +146,7 @@ public class MainActivity extends AppCompatActivity{
                 insertPassword.setActivated(false);
 
                 loginLayout.requestFocus();
+                forgotPass_text.setVisibility(View.GONE);
                 login_btn_text.setVisibility(View.GONE);
                 login_btn_animation_loading.setVisibility(View.VISIBLE);
                 login_btn_animation_loading.playAnimation();
@@ -152,14 +163,27 @@ public class MainActivity extends AppCompatActivity{
 
         });
 
-
-        /*loginBtn = findViewById(R.id.loginBtn);
-        loginBtn.setOnClickListener(new View.OnClickListener() {
+        forgotPass_text = findViewById(R.id.forgotPassText);
+        String forgotTextv = "Forgot password?";
+        SpannableString fss = new SpannableString(forgotTextv);
+        ClickableSpan fss_forgotPass = new ClickableSpan() {
             @Override
-            public void onClick(View view) {
-                userLogin();
+            public void onClick(@NonNull View view) {
+                // Start Alert Dialog to get ID and send email notification!
+                forgotPassAlert();
             }
-        });*/
+
+            @Override
+            public void updateDrawState(TextPaint ds){
+                super.updateDrawState(ds);
+                ds.setColor(Color.WHITE);
+            }
+        };
+        fss.setSpan(fss_forgotPass,0, forgotTextv.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        forgotPass_text.setText(fss);
+        forgotPass_text.setMovementMethod(LinkMovementMethod.getInstance());
+
+
         signupText = findViewById(R.id.signupText);
         String signupTextv = "No Account? Sign-up Here!";
         SpannableString ss = new SpannableString(signupTextv);
@@ -525,6 +549,7 @@ public class MainActivity extends AppCompatActivity{
                             loginFailState();
                             insertEmail.setActivated(true);
                             insertPassword.setActivated(true);
+                            forgotPass_text.setVisibility(View.VISIBLE);
                             //Toast.makeText(MainActivity.this, "Student ID or Password is wrong!",Toast.LENGTH_SHORT).show();
                             Log.d(TAG+" [userLogin]", "Login Failed!");
                         }
@@ -532,15 +557,139 @@ public class MainActivity extends AppCompatActivity{
                 });
     }
 
+    private void forgotPassAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        final View customLayout = getLayoutInflater().inflate(R.layout.forgot_password_layout, null);
+        builder.setView(customLayout);
+
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.forgotpass_dialog_layout_bckg);
+        dialog.show();
+
+        TextView submit_text = customLayout.findViewById(R.id.forgotPass_dialog_button_text);
+
+        insertID_forgotPass = customLayout.findViewById(R.id.forgotPass_insertID);
+        forgot_btn_animation_loading = customLayout.findViewById(R.id.forgotPass_dialog_button_animation_loading);
+        forgot_btn_animation_check = customLayout.findViewById(R.id.forgotPass_dialog_button_animation_check);
+        forgot_btn_animation_cross = customLayout.findViewById(R.id.forgotPass_dialog_button_animation_cross);
+        forgot_btn_layout = customLayout.findViewById(R.id.forgotPass_dialog_button_layout);
+        forgot_btn_layout.setOnClickListener(new View.OnClickListener() {
+            Query query;
+            String name, password, email, id;
+            @Override
+            public void onClick(View view) {
+                id = insertID_forgotPass.getText().toString();
+                submit_text.setVisibility(View.GONE);
+                insertID_forgotPass.clearFocus();
+                insertID_forgotPass.setActivated(false);
+                forgot_btn_animation_loading.setVisibility(View.VISIBLE);
+                forgot_btn_animation_loading.playAnimation();
+                new Handler().postDelayed(this::checkID,TIMER);
+            }
+
+            private void checkID() {
+                Log.d(TAG+"[Check ID]",id);
+                query = rtDB.getReference()
+                        .child("login")
+                        .orderByChild("studentID")
+                        .equalTo(id);
+                ValueEventListener valueEventListener = new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot ds : snapshot.getChildren()){
+                            String uid = ds.getKey();
+                            Log.d(TAG+"[Check UID]",uid);
+                            sendMail(uid);
+                        }
+
+                        if(!snapshot.exists()){
+                            insertID_forgotPass.setActivated(true);
+                            insertID_forgotPass.setText("");
+                            insertID_forgotPass.setHint("ACCOUNT DOES NOT EXIST!");
+                            insertID_forgotPass.setHintTextColor(ContextCompat.getColor(MainActivity.this, R.color.dialog_text_and_highlight_orange));
+
+                            forgot_btn_animation_loading.setVisibility(View.GONE);
+                            forgot_btn_animation_loading.pauseAnimation();
+                            forgot_btn_animation_cross.setVisibility(View.VISIBLE);
+                            forgot_btn_animation_cross.playAnimation();
+                            new Handler().postDelayed(this::resetForgotState, TIMER+3000);
+                        }
+                    }
+
+                    private void resetForgotState() {
+                        submit_text.setVisibility(View.VISIBLE);
+                        forgot_btn_animation_cross.setVisibility(View.GONE);
+                        forgot_btn_animation_cross.pauseAnimation();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d(TAG+"[Alert Dialog]","Error: "+error.getMessage());
+                    }
+                };
+                query.addListenerForSingleValueEvent(valueEventListener);
+
+            }
+
+            private void sendMail(String uid){
+                assert uid != null;
+                rtDB.getReference()
+                        .child("login")
+                        .child(uid)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                                if(task.isSuccessful()){
+                                    UserModel userModel = task.getResult().getValue(UserModel.class);
+                                    assert userModel != null;
+                                    name = userModel.getName();
+                                    email = userModel.getEmail();
+                                    password = userModel.getPassword();
+                                    new Handler().postDelayed(this::sendPass, TIMER);
+                                }
+                            }
+
+                            private void sendPass() {
+
+                                String subject = "Forgot Password!";
+                                String message = "Dear "+name+"["+id+"],\n\n"+
+                                        "You have requested {Forgot Password}!\n"+
+                                        "Your password is:\t"+password+
+                                        "\n\nBest regards,\n\nUCSI Event Hotspot";
+                                JavaMailAPI javaMailAPI = new JavaMailAPI(MainActivity.this, email, subject, message);
+                                javaMailAPI.execute();
+                                new Handler().postDelayed(this::close, TIMER);
+                            }
+
+                            private void close() {
+                                forgot_btn_animation_check.setVisibility(View.VISIBLE);
+                                forgot_btn_animation_check.playAnimation();
+                                new Handler().postDelayed(this::closeDialog,TIMER);
+                            }
+
+                            private void closeDialog() {
+                                forgot_btn_animation_check.setVisibility(View.GONE);
+                                forgot_btn_animation_check.pauseAnimation();
+                                dialog.dismiss();
+                            }
+                        });
+            }
+
+        });
+
+    }
+
     private void layoutPostLogin(){
         isLogin = true;
         isOnMap = true;
         loginLayout.setVisibility(View.INVISIBLE);
         mainLayout.setVisibility(View.VISIBLE);
-        layoutParams = (ConstraintLayout.LayoutParams) constraintLayout_arFragment.getLayoutParams();
-        layoutParams.height = ConstraintLayout.LayoutParams.MATCH_PARENT;
-        layoutParams.width = ConstraintLayout.LayoutParams.MATCH_PARENT;
-        sceneView.setLayoutParams(layoutParams);
+        insertEmail.setText("");
+        insertPassword.setText("");
+        main_motionLayout.transitionToEnd();
         new Handler().postDelayed(this::revertState, 3000);
     }
 

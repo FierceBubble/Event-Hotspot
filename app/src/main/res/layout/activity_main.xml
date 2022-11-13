@@ -1,40 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainActivity_motionLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/arfragment_bckg"
+    android:background="@color/main_activity_background"
+    app:layoutDescription="@xml/activity_main_scene"
     tools:context=".MainActivity">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout_arFragment"
+    <com.google.ar.sceneform.SceneView
+        android:id="@+id/arFragment"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:layout_marginTop="8dp"
+        android:background="@color/arfragment_scene_bckg"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.ar.sceneform.SceneView
-            android:id="@+id/arFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/arfragment_scene_bckg"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/main_activity_background"
         android:orientation="vertical"
         android:visibility="gone"
-        android:background="@color/main_bckg"
         app:layout_constraintBottom_toTopOf="@+id/mainLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +34,7 @@
         <FrameLayout
             android:id="@+id/fragmentLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
 
     </LinearLayout>
@@ -52,9 +43,9 @@
         android:id="@+id/fragmentContainer_Profile"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/main_activity_background"
         android:orientation="vertical"
         android:visibility="gone"
-        android:background="@color/main_bckg"
         app:layout_constraintBottom_toTopOf="@+id/mainLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,7 +54,7 @@
         <FrameLayout
             android:id="@+id/fragmentLayout_Profile"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
 
     </LinearLayout>
@@ -74,7 +65,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -124,11 +115,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/login_layout_bckg"
-        android:orientation="vertical"
-        android:visibility="visible"
-        android:paddingTop="16dp"
-        android:paddingBottom="32dp"
         android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:paddingTop="24dp"
+        android:paddingBottom="32dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -139,18 +130,18 @@
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_gravity="center_horizontal"
-            android:layout_weight="1"
-            android:ems="10"
-            android:textAlignment="center"
-            android:maxLength="10"
-            android:inputType="number"
-            android:textColor="@color/highlights_lightblue"
-            android:background="@drawable/field_selector"
             android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/field_selector"
+            android:ems="10"
+            android:hint="Student ID"
+            android:inputType="number"
+            android:maxLength="10"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:hint="Student ID"
-            android:textColorHint="#27B0E7FD"/>
+            android:textAlignment="center"
+            android:textColor="@color/main_activity_text_and_highlight_blue"
+            android:textColorHint="#27B0E7FD" />
 
 
         <EditText
@@ -158,18 +149,18 @@
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_gravity="center_horizontal"
-            android:layout_weight="1"
-            android:ems="10"
-            android:textAlignment="center"
-            android:inputType="textPassword"
-            android:textColor="@color/highlights_lightblue"
-            android:background="@drawable/field_selector"
             android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/field_selector"
+            android:ems="10"
             android:fontFamily="sans-serif"
+            android:hint="Password"
+            android:inputType="textPassword"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:hint="Password"
-            android:textColorHint="#26B0E7FD"/>
+            android:textAlignment="center"
+            android:textColor="@color/main_activity_text_and_highlight_blue"
+            android:textColorHint="#26B0E7FD" />
 
 
         <RelativeLayout
@@ -188,7 +179,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="Sign-In"
-                android:textColor="#B0E7FD"
+                android:textColor="@color/main_activity_text_and_highlight_blue"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -225,24 +216,34 @@
         </RelativeLayout>
 
         <TextView
+            android:id="@+id/forgotPassText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="- - - - -  Or  - - - - -"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@color/highlights_lightblue"/>
+            android:layout_marginTop="16dp"
+            android:text="Forgot password?"
+            android:textColor="@color/main_activity_text_and_highlight_blue"
+            android:visibility="gone"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No account? Sign-up Here!"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="- - - - -  Or  - - - - -"
+            android:textColor="@color/main_activity_text_and_highlight_blue" />
+
+        <TextView
             android:id="@+id/signupText"
-            android:textColor="@color/highlights_lightblue"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="No account? Sign-up Here!"
+            android:textColor="@color/main_activity_text_and_highlight_blue" />
 
 
     </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>

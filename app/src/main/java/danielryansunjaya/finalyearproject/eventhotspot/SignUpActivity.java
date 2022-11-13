@@ -203,6 +203,7 @@ public class SignUpActivity extends AppCompatActivity {
                     failCreateAccount();
                     id_warning.setVisibility(View.VISIBLE);
                     id_warning.playAnimation();
+                    inputID.setActivated(true);
                     inputID.setText("");
                     inputID.setHint("ACCOUNT EXIST!");
                     inputID.setHintTextColor(ContextCompat.getColor(SignUpActivity.this, R.color.form_text_and_highlight_orange));
@@ -229,7 +230,7 @@ public class SignUpActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             FirebaseUser user = auth.getCurrentUser();
                             int elePoints = 0;
-                            UserModel UserModel=new UserModel(name,id,email+"@ucsiuniversity.edu.my",programme, password, elePoints);
+                            UserModel UserModel=new UserModel(name,id,email,programme, password, elePoints);
                             assert user != null;
                             String uid= user.getUid();
 
@@ -245,13 +246,13 @@ public class SignUpActivity extends AppCompatActivity {
         String subject = "Account created successfully!";
         String message = "Dear "+name+",\n\n"+
                 "Your account has been created successfully with the details as such:"+
-                "\nName:\t"+name+
-                "\nStudent ID:\t"+id+
-                "\nEmail:\t"+email+
-                "\nProgramme:\t"+programme+
-                "\nPassword:\t"+password+
+                "\nName:\t "+name+
+                "\nStudent ID:\t "+id+
+                "\nProgramme:\t "+programme+
+                "\nPassword:\t "+password+
                 "\nThank you for using 'Event Hotspot' Mobile Application made by: Daniel Ryan Sunjaya (1001851873)."+
                 "\n\nBest regards,\n\nUCSI Event Hotspot";
+
         JavaMailAPI javaMailAPI = new JavaMailAPI(this, email, subject, message);
         javaMailAPI.execute();
 
@@ -288,7 +289,6 @@ public class SignUpActivity extends AppCompatActivity {
         signup_btn_animation_cross.pauseAnimation();
         signup_btn_animation_cross.setVisibility(View.GONE);
         signup_btn_text.setVisibility(View.VISIBLE);
-        //Toast.makeText(SignUpActivity.this, "SignUp Success!",Toast.LENGTH_SHORT).show();
         finish();
     }
 }

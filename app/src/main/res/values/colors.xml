@@ -18,6 +18,18 @@
     <color name="highlights_lightblue">#B0E7FD</color>
     <color name="highlights_orange">#FF8E3A</color>
 
+    <!-- MainActivity Color Palette-->
+    <color name="main_activity_background">#020a2f</color>
+    <color name="main_activity_panel_background">#020926</color>
+    <color name="main_activity_submit_btn_background">#051768</color>
+    <color name="main_activity_text_and_highlight_blue">#B0E7FD</color>
+    <color name="main_activity_text_and_highlight_orange">#FF8E3A</color>
+
+
+    <!-- SceneView color Palette-->
+    <color name="arfragment_bckg">#020a2f</color>
+    <color name="arfragment_scene_bckg">#071737</color>
+
     <!-- Form Color Palette-->
     <color name="form_layout_bckg">#020a2f</color>
     <color name="form_inputField_background">#041459</color>
@@ -29,8 +41,11 @@
     <color name="ic_color">#020a2f</color>
     <color name="ic_color_focused">#B0E7FD</color>
 
-    <!-- SceneView color Palette-->
-    <color name="arfragment_bckg">#020a2f</color>
-    <color name="arfragment_scene_bckg">#071737</color>
+    <!-- Alert Dialog Color Palette-->
+    <color name="dialog_background">#020a2f</color>
+    <color name="dialog_text_and_highlight_blue">#B0E7FD</color>
+    <color name="dialog_text_and_highlight_orange">#FF8E3A</color>
+    <color name="dialog_hint_grey">#27B0E7FD</color>
+
 
 </resources>
