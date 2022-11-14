@@ -1,4 +1,4 @@
-package danielryansunjaya.finalyearproject.eventhotspot;
+package danielryansunjaya.finalyearproject.eventhotspot.ui;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import danielryansunjaya.finalyearproject.eventhotspot.R;
 import danielryansunjaya.finalyearproject.eventhotspot.adapters.UserEventAdapter;
 import danielryansunjaya.finalyearproject.eventhotspot.models.EventModel;
 import danielryansunjaya.finalyearproject.eventhotspot.models.UserModel;

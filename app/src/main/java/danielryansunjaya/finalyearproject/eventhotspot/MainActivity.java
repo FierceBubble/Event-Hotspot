@@ -11,7 +11,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -69,6 +68,7 @@ import java.util.concurrent.ExecutionException;
 
 import danielryansunjaya.finalyearproject.eventhotspot.models.UserModel;
 import danielryansunjaya.finalyearproject.eventhotspot.ui.EventFragment;
+import danielryansunjaya.finalyearproject.eventhotspot.ui.ProfileFragment;
 import danielryansunjaya.finalyearproject.eventhotspot.utils.JavaMailAPI;
 
 
