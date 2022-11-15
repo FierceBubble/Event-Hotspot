@@ -85,6 +85,7 @@
             android:layout_marginTop="8dp" />
     </ConstraintSet>
     <Transition
+        android:id="@+id/show_close_menu"
         motion:constraintSetStart="@+id/end"
         motion:constraintSetEnd="@+id/show_menu"
         motion:duration="1000"

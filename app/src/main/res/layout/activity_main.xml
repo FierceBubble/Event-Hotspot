@@ -19,6 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- com.google.ar.sceneform.SceneView  FrameLayout-->
     <com.google.ar.sceneform.SceneView
         android:id="@+id/arFragment"
         android:layout_width="250dp"
@@ -58,7 +59,6 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/mainLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <FrameLayout
@@ -141,6 +141,17 @@
 
 
     </androidx.constraintlayout.motion.widget.MotionLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/static_profile_picture"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="16dp"
+        android:src="@mipmap/ic_launcher"
+        app:layout_constraintBottom_toBottomOf="@+id/ucsi_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ucsi_logo"
+        tools:visibility="gone" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

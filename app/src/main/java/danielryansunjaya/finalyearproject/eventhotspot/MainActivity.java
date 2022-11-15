@@ -220,7 +220,6 @@ public class MainActivity extends AppCompatActivity{
         initModels();
 
         // Create Fragments
-
         fragmentContainer = findViewById(R.id.fragmentContainer);
         listAllEventBtn = findViewById(R.id.listAllEventBtn);
         listAllEventBtn.setOnClickListener(new View.OnClickListener() {
@@ -234,7 +233,7 @@ public class MainActivity extends AppCompatActivity{
                 isOnMap = false;
                 fragmentContainer.setVisibility(View.VISIBLE);
                 fragmentContainer_Profile.setVisibility(View.INVISIBLE);
-                user_main_layout.transitionToStart();
+                //user_main_layout.transitionToStart();
                 main_motionLayout.transitionToState(R.id.show_event_list);
                 new Handler().postDelayed(this::continueAnimation,TIMER);
             }
@@ -252,7 +251,7 @@ public class MainActivity extends AppCompatActivity{
                 isOnMap = true;
                 fragmentContainer.setVisibility(View.INVISIBLE);
                 fragmentContainer_Profile.setVisibility(View.INVISIBLE);
-                user_main_layout.transitionToStart();
+                //user_main_layout.transitionToStart();
                 main_motionLayout.transitionToState(R.id.back_to_end_from_event);
             }
 
@@ -271,7 +270,8 @@ public class MainActivity extends AppCompatActivity{
                 isOnMap = false;
                 fragmentContainer.setVisibility(View.INVISIBLE);
                 fragmentContainer_Profile.setVisibility(View.VISIBLE);
-                user_main_layout.transitionToStart();
+                //user_main_layout.transitionToStart();
+                main_motionLayout.transitionToState(R.id.show_profile_page);
 
                 new Handler().postDelayed(this::continueAnimation,TIMER);
             }
