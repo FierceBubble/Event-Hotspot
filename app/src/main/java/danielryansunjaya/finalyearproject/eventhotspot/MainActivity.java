@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity{
     TextView signupText, login_btn_text, forgotPass_text;
     EditText insertEmail, insertPassword, insertID_forgotPass;
     Button listAllEventBtn, profileBtn, mapBtn;
-    MotionLayout main_motionLayout;
+    MotionLayout main_motionLayout, user_main_layout;
     LinearLayout loginLayout, fragmentContainer, fragmentContainer_Profile;
     ConstraintLayout mainLayout;
     RelativeLayout login_btn_layout, forgot_btn_layout;
@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity{
         mainLayout = findViewById(R.id.mainLayout);
 
         main_motionLayout = findViewById(R.id.mainActivity_motionLayout);
+        user_main_layout = findViewById(R.id.user_main_layout);
         login_btn_text = findViewById(R.id.login_button_text);
         login_btn_animation_loading = findViewById(R.id.login_button_animation_loading);
         login_btn_animation_check = findViewById(R.id.login_button_animation_check);
@@ -160,7 +161,6 @@ public class MainActivity extends AppCompatActivity{
                     loginFailState();
                 }
             }
-
         });
 
         forgotPass_text = findViewById(R.id.forgotPassText);
@@ -234,6 +234,8 @@ public class MainActivity extends AppCompatActivity{
                 isOnMap = false;
                 fragmentContainer.setVisibility(View.VISIBLE);
                 fragmentContainer_Profile.setVisibility(View.INVISIBLE);
+                user_main_layout.transitionToStart();
+                main_motionLayout.transitionToState(R.id.show_event_list);
                 new Handler().postDelayed(this::continueAnimation,TIMER);
             }
 
@@ -250,6 +252,8 @@ public class MainActivity extends AppCompatActivity{
                 isOnMap = true;
                 fragmentContainer.setVisibility(View.INVISIBLE);
                 fragmentContainer_Profile.setVisibility(View.INVISIBLE);
+                user_main_layout.transitionToStart();
+                main_motionLayout.transitionToState(R.id.back_to_end_from_event);
             }
 
         });
@@ -267,6 +271,7 @@ public class MainActivity extends AppCompatActivity{
                 isOnMap = false;
                 fragmentContainer.setVisibility(View.INVISIBLE);
                 fragmentContainer_Profile.setVisibility(View.VISIBLE);
+                user_main_layout.transitionToStart();
 
                 new Handler().postDelayed(this::continueAnimation,TIMER);
             }
@@ -677,9 +682,7 @@ public class MainActivity extends AppCompatActivity{
                             }
                         });
             }
-
         });
-
     }
 
     private void layoutPostLogin(){
@@ -690,6 +693,7 @@ public class MainActivity extends AppCompatActivity{
         insertEmail.setText("");
         insertPassword.setText("");
         main_motionLayout.transitionToEnd();
+        user_main_layout.transitionToEnd();
         new Handler().postDelayed(this::revertState, 3000);
     }
 
