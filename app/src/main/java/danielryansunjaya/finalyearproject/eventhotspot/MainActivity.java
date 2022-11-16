@@ -34,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -53,6 +54,7 @@ import com.google.ar.sceneform.ux.TransformationSystem;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -61,8 +63,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -70,6 +74,7 @@ import danielryansunjaya.finalyearproject.eventhotspot.models.UserModel;
 import danielryansunjaya.finalyearproject.eventhotspot.ui.EventFragment;
 import danielryansunjaya.finalyearproject.eventhotspot.ui.ProfileFragment;
 import danielryansunjaya.finalyearproject.eventhotspot.utils.JavaMailAPI;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -80,6 +85,7 @@ public class MainActivity extends AppCompatActivity{
     FirebaseAuth auth;
     FirebaseFirestore db;
     FirebaseDatabase rtDB;
+    FirebaseStorage storage;
     TextView signupText, login_btn_text, forgotPass_text;
     EditText insertEmail, insertPassword, insertID_forgotPass;
     Button listAllEventBtn, profileBtn, mapBtn;
@@ -90,6 +96,8 @@ public class MainActivity extends AppCompatActivity{
     LottieAnimationView login_btn_animation_loading, login_btn_animation_check,
             login_btn_animation_cross, forgot_btn_animation_loading, forgot_btn_animation_check,
             forgot_btn_animation_cross ;
+
+    CircleImageView profile_picture_main, profile_picture_fragment;
 
     @Nullable private ObjectAnimator rotateAnimation = null;
     private Vector3 modelScale = new Vector3(0.3f,0.3f,0.3f);
@@ -127,11 +135,14 @@ public class MainActivity extends AppCompatActivity{
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         rtDB = FirebaseDatabase.getInstance();
+        storage = FirebaseStorage.getInstance();
 
         insertEmail = findViewById(R.id.insertStudentID);
         insertPassword = findViewById(R.id.insertPassword);
         loginLayout = findViewById(R.id.loginLayout);
         mainLayout = findViewById(R.id.mainLayout);
+        profile_picture_main = findViewById(R.id.user_profile_picture);
+        profile_picture_fragment = findViewById(R.id.static_profile_picture);
 
         main_motionLayout = findViewById(R.id.mainActivity_motionLayout);
         user_main_layout = findViewById(R.id.user_main_layout);
@@ -225,9 +236,6 @@ public class MainActivity extends AppCompatActivity{
         listAllEventBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.fragmentLayout, new EventFragment());
-                ft.commit();
 
                 //sceneView.setVisibility(View.INVISIBLE);
                 isOnMap = false;
@@ -262,9 +270,6 @@ public class MainActivity extends AppCompatActivity{
         profileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction ft_profile = getSupportFragmentManager().beginTransaction();
-                ft_profile.replace(R.id.fragmentLayout_Profile, new ProfileFragment());
-                ft_profile.commit();
 
                 //sceneView.setVisibility(View.INVISIBLE);
                 isOnMap = false;
@@ -688,6 +693,33 @@ public class MainActivity extends AppCompatActivity{
     private void layoutPostLogin(){
         isLogin = true;
         isOnMap = true;
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragmentLayout, new EventFragment());
+        ft.commit();
+        FragmentTransaction ft_profile = getSupportFragmentManager().beginTransaction();
+        ft_profile.replace(R.id.fragmentLayout_Profile, new ProfileFragment());
+        ft_profile.commit();
+
+        rtDB.getReference()
+                .child("login")
+                .child(Objects.requireNonNull(auth.getUid()))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        UserModel userModel = snapshot.getValue(UserModel.class);
+                        assert userModel != null;
+                        if(userModel.getImageURI()!=null){
+                            Glide.with(MainActivity.this).load(userModel.getImageURI()).into(profile_picture_main);
+                            Glide.with(MainActivity.this).load(userModel.getImageURI()).into(profile_picture_fragment);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d(TAG+"[Load Profile Pic]","Error: "+error.getMessage());
+                    }
+                });
+
         loginLayout.setVisibility(View.INVISIBLE);
         mainLayout.setVisibility(View.VISIBLE);
         insertEmail.setText("");

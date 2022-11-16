@@ -1,11 +1,14 @@
 package danielryansunjaya.finalyearproject.eventhotspot.models;
 
+import android.net.Uri;
+
 public class UserModel {
     String name;
     String studentID;
     String email;
     String programme;
     String password;
+    String imageURI;
     int elePoints;
 
     public UserModel(){}
@@ -57,6 +60,14 @@ public class UserModel {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getImageURI() {
+        return imageURI;
+    }
+
+    public void setImageURI(String imageURI) {
+        this.imageURI = imageURI;
     }
 
     public int getElePoints() {

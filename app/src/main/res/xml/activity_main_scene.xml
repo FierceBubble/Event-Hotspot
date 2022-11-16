@@ -21,14 +21,16 @@
             android:visibility="visible"
             motion:layout_constraintStart_toStartOf="parent" />
         <Constraint
-            android:layout_height="250dp"
+            android:layout_height="500dp"
             motion:layout_constraintStart_toStartOf="parent"
             motion:layout_constraintBottom_toBottomOf="parent"
-            motion:layout_constraintHorizontal_bias="0.496"
+            motion:layout_constraintHorizontal_bias="0.505"
             motion:layout_constraintEnd_toEndOf="parent"
-            android:layout_width="250dp"
+            android:layout_width="500dp"
             android:id="@+id/arFragment"
-            motion:layout_constraintTop_toBottomOf="@+id/ucsi_logo"
+            android:scaleX=".5"
+            android:scaleY=".5"
+            motion:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="24dp"
             motion:layout_constraintVertical_bias="0.0" />
         <Constraint
@@ -62,13 +64,11 @@
         <Constraint
             android:id="@+id/arFragment"
             motion:layout_constraintEnd_toEndOf="parent"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
+            android:layout_width="575dp"
+            android:layout_height="575dp"
             motion:layout_constraintStart_toStartOf="parent"
             motion:layout_constraintBottom_toTopOf="@+id/mainLayout"
             motion:layout_constraintHorizontal_bias="0.496"
-            android:scaleX="2"
-            android:scaleY="2"
             motion:layout_constraintTop_toBottomOf="@+id/ucsi_logo"
             android:layout_marginTop="16dp" />
         <Constraint
@@ -110,6 +110,7 @@
             motion:layout_constraintBottom_toTopOf="@+id/mainLayout"
             android:layout_width="wrap_content"
             android:id="@+id/fragmentContainer_Profile"
+            android:layout_marginTop="8dp"
             motion:layout_constraintTop_toBottomOf="@id/ucsi_logo"
             motion:layout_constraintStart_toEndOf="parent"
             android:alpha="0"
@@ -133,6 +134,8 @@
             motion:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:visibility="visible"
+            android:layout_marginTop="8dp"
             motion:layout_constraintBottom_toTopOf="@+id/mainLayout"
             motion:layout_constraintTop_toBottomOf="@id/ucsi_logo"
             motion:layout_constraintStart_toStartOf="parent" />
@@ -171,18 +174,21 @@
     <Transition
         motion:constraintSetStart="@+id/end"
         motion:constraintSetEnd="@+id/show_profile_page"
-        motion:duration="1250" >
+        motion:motionInterpolator="easeIn">
         <KeyFrameSet />
     </Transition>
     <Transition
         motion:constraintSetStart="@+id/end"
-        motion:constraintSetEnd="@+id/show_event_list" />
+        motion:constraintSetEnd="@+id/show_event_list"
+        motion:motionInterpolator="easeIn" />
     <Transition
         android:id="@+id/back_to_end_from_profile"
         motion:constraintSetStart="@+id/show_profile_page"
-        motion:constraintSetEnd="@+id/end" />
+        motion:constraintSetEnd="@+id/end"
+        motion:motionInterpolator="easeInOut" />
     <Transition
         android:id="@+id/back_to_end_from_event"
         motion:constraintSetStart="@+id/show_event_list"
-        motion:constraintSetEnd="@+id/end" />
+        motion:constraintSetEnd="@+id/end"
+        motion:motionInterpolator="easeInOut" />
 </MotionScene>

@@ -6,11 +6,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -72,6 +74,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.elePoint.setText("Ele Point\n"+ eventModelList.get(position).getElePoint());
         holder.location.setText("Block "+eventModelList.get(position).getLocation());
 
+        holder.cardView.startAnimation(AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.event_card_view_anim));
+
     }
 
     @Override
@@ -81,6 +85,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        CardView cardView;
         TextView title, organizer, pic, picEmail, date, time, location, elePoint;
         Button joinBtn;
 
@@ -89,6 +94,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             super(itemView);
 
             this.onClickJoinEventListener = onClickJoinEventListener;
+
+            cardView = itemView.findViewById(R.id.card_view_event);
 
             title = itemView.findViewById(R.id.title_text);
             organizer = itemView.findViewById(R.id.organizer_text);

@@ -6,10 +6,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,6 +51,8 @@ public class UserEventAdapter extends RecyclerView.Adapter<UserEventAdapter.View
         holder.time.setText(eventModelList.get(position).getTime());
         holder.elePoint.setText("Ele Point\n"+ eventModelList.get(position).getElePoint());
         holder.location.setText("Block "+eventModelList.get(position).getLocation());
+
+        holder.cardView.startAnimation(AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.profile_event_card_view_anim));
     }
 
     @Override
@@ -56,6 +60,7 @@ public class UserEventAdapter extends RecyclerView.Adapter<UserEventAdapter.View
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        CardView cardView;
         TextView title, organizer, pic, picEmail, date, time, location, elePoint;
         Button cancelBtn;
         ConstraintLayout additionalInfoLayout;
@@ -67,6 +72,7 @@ public class UserEventAdapter extends RecyclerView.Adapter<UserEventAdapter.View
 
            this.onClickCancelEventListener = onClickCancelEventListener;
 
+           cardView = itemView.findViewById(R.id.card_view_profile);
            additionalInfoLayout = itemView.findViewById(R.id.additionalInfoLayout);
            title = itemView.findViewById(R.id.title_text);
            organizer = itemView.findViewById(R.id.organizer_text);
