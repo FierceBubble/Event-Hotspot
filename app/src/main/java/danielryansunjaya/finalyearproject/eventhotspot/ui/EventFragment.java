@@ -52,6 +52,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
     FirebaseAuth auth;
 
     List<EventModel> eventModelList;
+    List<String> userEventList;
     EventsAdapter eventsAdapter;
     SwipeRefreshLayout refresh;
 
@@ -86,34 +87,54 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
     private void listAll() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.VERTICAL, false));
         eventModelList = new ArrayList<>();
-        eventsAdapter = new EventsAdapter(getActivity(),eventModelList,this);
+        userEventList = new ArrayList<>();
+        eventsAdapter = new EventsAdapter(getActivity(),eventModelList, userEventList,this);
         recyclerView.setAdapter(eventsAdapter);
 
-        db.collection("eventList")
+        db.collection("studentsJoinEvents")
+                .document(Objects.requireNonNull(auth.getUid()))
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @SuppressLint("NotifyDataSetChanged")
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful()){
-                            for(QueryDocumentSnapshot document: task.getResult()){
-                                EventModel eventModel = document.toObject(EventModel.class);
-                                eventModelList.add(eventModel);
-                                eventsAdapter.notifyDataSetChanged();
-                            }
-                            Log.i(TAG+" [listAll]","Successfully display all events!");
-                        } else {
-                            Log.i(TAG+" [listAll]","Failed to display all events!");
-                            Toast.makeText(getActivity(), "Error"+task.getException(), Toast.LENGTH_SHORT).show();
+                            DocumentSnapshot documentSnapshot = task.getResult();
+
+                            db.collection("eventList")
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @SuppressLint("NotifyDataSetChanged")
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if(task.isSuccessful()){
+
+                                                for(QueryDocumentSnapshot document: task.getResult()){
+                                                    EventModel eventModel = document.toObject(EventModel.class);
+                                                    eventModelList.add(eventModel);
+                                                    userEventList = (List<String>) documentSnapshot.get("eventList");
+                                                    eventsAdapter.notifyDataSetChanged();
+                                                    Log.d(TAG, String.valueOf(userEventList));
+                                                }
+                                                Log.i(TAG+" [listAll]","Successfully display all events!");
+                                            } else {
+                                                Log.i(TAG+" [listAll]","Failed to display all events!");
+                                                Toast.makeText(getActivity(), "Error"+task.getException(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i(TAG+" [listAll]","Failed to display user's joined event!");
+                                        }
+                                    });
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i(TAG+" [listAll]","Failed to display user's joined event!");
+
+
                     }
                 });
+
+
     }
 
     @Override

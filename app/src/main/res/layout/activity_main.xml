@@ -94,19 +94,19 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_profile_menu_btn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_marginEnd="16dp"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/icon_profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_profile_logout_btn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_marginEnd="16dp"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/ic_logout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -162,47 +162,90 @@
         android:id="@+id/mainLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:visibility="visible"
+        android:background="@drawable/login_layout_bckg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <Button
+        <LinearLayout
             android:id="@+id/listAllEventBtn"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="List"
-            android:textSize="12sp"
+            android:orientation="vertical"
+            android:clickable="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/mapBtn" />
+            app:layout_constraintTop_toTopOf="@+id/mapBtn">
 
-        <Button
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_event"
+                android:layout_gravity="center_horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="List"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:layout_gravity="center_horizontal"/>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/mapBtn"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|center_horizontal"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="24dp"
-            android:text="Map"
-            android:textSize="12sp"
+            android:orientation="vertical"
+            android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/profileBtn"
             app:layout_constraintStart_toEndOf="@+id/listAllEventBtn"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_map"
+                android:layout_gravity="center_horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Map"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:layout_gravity="center_horizontal"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/profileBtn"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
             android:layout_marginEnd="16dp"
-            android:text="Profile"
-            android:textSize="12sp"
+            android:orientation="vertical"
+            android:clickable="true"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/mapBtn" />
+            app:layout_constraintTop_toTopOf="@+id/mapBtn">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/icon_profile"
+                android:layout_gravity="center_horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Profile"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:layout_gravity="center_horizontal"/>
+        </LinearLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

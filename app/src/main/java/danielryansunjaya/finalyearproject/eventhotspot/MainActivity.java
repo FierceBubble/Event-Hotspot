@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity{
     FirebaseStorage storage;
     TextView signupText, login_btn_text, forgotPass_text;
     EditText insertEmail, insertPassword, insertID_forgotPass;
-    Button listAllEventBtn, profileBtn, mapBtn;
+    LinearLayout listAllEventBtn, profileBtn, mapBtn;
     MotionLayout main_motionLayout, user_main_layout;
     LinearLayout loginLayout, fragmentContainer, fragmentContainer_Profile;
     ConstraintLayout mainLayout;
@@ -711,6 +711,7 @@ public class MainActivity extends AppCompatActivity{
                         if(userModel.getImageURI()!=null){
                             Glide.with(MainActivity.this).load(userModel.getImageURI()).into(profile_picture_main);
                             Glide.with(MainActivity.this).load(userModel.getImageURI()).into(profile_picture_fragment);
+                            Log.d(TAG+"[Load Profile Pic]","Successfully Load Profile Picture");
                         }
                     }
 
