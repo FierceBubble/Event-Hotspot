@@ -94,10 +94,11 @@ public class MainActivity extends AppCompatActivity{
     ConstraintLayout mainLayout;
     RelativeLayout login_btn_layout, forgot_btn_layout;
     LottieAnimationView login_btn_animation_loading, login_btn_animation_check,
-            login_btn_animation_cross, forgot_btn_animation_loading, forgot_btn_animation_check,
-            forgot_btn_animation_cross ;
+            login_btn_animation_cross, forgot_btn_animation_loading,
+            forgot_btn_animation_check, forgot_btn_animation_cross ;
 
-    CircleImageView profile_picture_main, profile_picture_fragment;
+    CircleImageView profile_picture_main, profile_picture_fragment,
+            logout_btn, user_profile_menu;
 
     @Nullable private ObjectAnimator rotateAnimation = null;
     private Vector3 modelScale = new Vector3(0.3f,0.3f,0.3f);
@@ -229,6 +230,30 @@ public class MainActivity extends AppCompatActivity{
         //sceneView.getScene().getCamera().setLocalPosition(new Vector3(0,-0.25f,0.5f));
         scene=sceneView.getScene();
         initModels();
+
+        logout_btn = findViewById(R.id.user_profile_logout_btn);
+        logout_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recreate();
+            }
+        });
+
+        user_profile_menu = findViewById(R.id.user_profile_menu_btn);
+        user_profile_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isOnMap = false;
+                fragmentContainer.setVisibility(View.INVISIBLE);
+                fragmentContainer_Profile.setVisibility(View.VISIBLE);
+                main_motionLayout.transitionToState(R.id.show_profile_page);
+
+                new Handler().postDelayed(this::continueAnimation,TIMER);
+            }
+            public void continueAnimation(){
+                startAnimation();
+            }
+        });
 
         // Create Fragments
         fragmentContainer = findViewById(R.id.fragmentContainer);
@@ -754,7 +779,6 @@ public class MainActivity extends AppCompatActivity{
         login_btn_text.setVisibility(View.VISIBLE);
     }
 
-
     @Override
     protected  void onResume(){
         super.onResume();
@@ -771,5 +795,3 @@ public class MainActivity extends AppCompatActivity{
         sceneView.pause();
     }
 }
-
-

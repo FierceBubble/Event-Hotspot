@@ -1,6 +1,8 @@
 package danielryansunjaya.finalyearproject.eventhotspot.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -52,7 +54,6 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
     FirebaseAuth auth;
 
     List<EventModel> eventModelList;
-    List<String> userEventList;
     EventsAdapter eventsAdapter;
     SwipeRefreshLayout refresh;
 
@@ -87,50 +88,33 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
     private void listAll() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.VERTICAL, false));
         eventModelList = new ArrayList<>();
-        userEventList = new ArrayList<>();
-        eventsAdapter = new EventsAdapter(getActivity(),eventModelList, userEventList,this);
+        eventsAdapter = new EventsAdapter(getActivity(),eventModelList,this);
         recyclerView.setAdapter(eventsAdapter);
 
-        db.collection("studentsJoinEvents")
-                .document(Objects.requireNonNull(auth.getUid()))
+        db.collection("eventList")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @SuppressLint("NotifyDataSetChanged")
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
-                            DocumentSnapshot documentSnapshot = task.getResult();
 
-                            db.collection("eventList")
-                                    .get()
-                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @SuppressLint("NotifyDataSetChanged")
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if(task.isSuccessful()){
-
-                                                for(QueryDocumentSnapshot document: task.getResult()){
-                                                    EventModel eventModel = document.toObject(EventModel.class);
-                                                    eventModelList.add(eventModel);
-                                                    userEventList = (List<String>) documentSnapshot.get("eventList");
-                                                    eventsAdapter.notifyDataSetChanged();
-                                                    Log.d(TAG, String.valueOf(userEventList));
-                                                }
-                                                Log.i(TAG+" [listAll]","Successfully display all events!");
-                                            } else {
-                                                Log.i(TAG+" [listAll]","Failed to display all events!");
-                                                Toast.makeText(getActivity(), "Error"+task.getException(), Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.i(TAG+" [listAll]","Failed to display user's joined event!");
-                                        }
-                                    });
+                            for(QueryDocumentSnapshot document: task.getResult()){
+                                EventModel eventModel = document.toObject(EventModel.class);
+                                eventModelList.add(eventModel);
+                                eventsAdapter.notifyDataSetChanged();
+                            }
+                            Log.i(TAG+" [listAll]","Successfully display all events!");
+                        } else {
+                            Log.i(TAG+" [listAll]","Failed to display all events!");
+                            Toast.makeText(getActivity(), "Error"+task.getException(), Toast.LENGTH_SHORT).show();
                         }
-
-
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i(TAG+" [listAll]","Failed to display user's joined event!");
                     }
                 });
 
@@ -154,6 +138,8 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
         eventInfo.put("time", eventModelList.get(position).getTime());
         eventInfo.put("elePoint", eventModelList.get(position).getElePoint());
         eventInfo.put("location", eventModelList.get(position).getLocation());
+        eventInfo.put("attended", false);
+        eventInfo.put("completed", false);
 
         // Inserting event informations to "joinedEventList" collection
         db.collection("studentsJoinEvents")
@@ -210,7 +196,22 @@ public class EventFragment extends Fragment implements EventsAdapter.OnClickJoin
                         }
                     }
                 });
+
         sendEmailNotif(eventModelList.get(position).getTitle());
+
+        if(!eventModelList.get(position).getEmail().isEmpty() && eventModelList.get(position).getEmail().contains("https")){
+            // Open link for Registration
+            Uri uri = Uri.parse(eventModelList.get(position).getEmail());
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }else if (!eventModelList.get(position).getEmail().isEmpty() && eventModelList.get(position).getEmail().contains("@")){
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("plain/text");
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[] { eventModelList.get(position).getEmail() });
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Request to join "+eventModelList.get(position).getTitle());
+            intent.putExtra(Intent.EXTRA_TEXT, "I want to join this Event!");
+            startActivity(intent);
+        }
 
         Toast.makeText(getActivity(),"Event Joined!",Toast.LENGTH_SHORT).show();
     }

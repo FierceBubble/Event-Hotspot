@@ -18,17 +18,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -84,6 +90,7 @@ public class ProfileFragment extends Fragment implements UserEventAdapter.OnClic
             public void onRefresh() {
                 refresh.setRefreshing(false);
                 listAllUserEvent();
+                displayUserInfo();
                 Log.i(TAG+" [Refresh]","Fragment refreshed!");
             }
         });
@@ -169,6 +176,48 @@ public class ProfileFragment extends Fragment implements UserEventAdapter.OnClic
                             Toast.makeText(getActivity(), "Event is Cancelled!", Toast.LENGTH_SHORT ).show();
                         }else{
                             Log.i(TAG+" [OnClickCancelEvent]","Failed to cancelled user's joined event!\n"+ task.getException());
+                        }
+                    }
+                });
+
+        DocumentReference documentReference = db.collection("studentsJoinEvents").document(auth.getUid());
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put("eventList", FieldValue.delete());
+        documentReference.update(updates);
+
+        // Update array "eventList"
+        db.collection("studentsJoinEvents")
+                .document(auth.getUid())
+                .collection("joinedEventList")
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            List<String> event = new ArrayList<>();
+                            for(QueryDocumentSnapshot document: task.getResult()){
+                                EventModel eventModel = document.toObject(EventModel.class);
+                                event.add(eventModel.getTitle());
+                            }
+
+                            HashMap<String, Object> hashEvent = new HashMap<>();
+                            hashEvent.put("eventList", event);
+                            db.collection("studentsJoinEvents")
+                                    .document(auth.getUid())
+                                    .set(hashEvent)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Log.i(TAG+" [OnClickCancelEvent]","EventList array is successfully added/updated!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i(TAG+" [OnClickCancelEvent]","Failed to added/updated eventList array!");
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(getActivity(), "Error"+task.getException(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

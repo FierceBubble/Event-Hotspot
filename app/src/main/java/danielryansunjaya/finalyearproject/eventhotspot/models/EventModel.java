@@ -3,6 +3,7 @@ package danielryansunjaya.finalyearproject.eventhotspot.models;
 public class EventModel {
     String title, date, email, location, organizer, pic, time;
     int elePoint;
+    Boolean attended, completed;
 
     public EventModel(){
     }
@@ -80,5 +81,21 @@ public class EventModel {
 
     public void setElePoint(int elePoint) {
         this.elePoint = elePoint;
+    }
+
+    public Boolean getAttended() {
+        return attended;
+    }
+
+    public void setAttended(Boolean attended) {
+        this.attended = attended;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
     }
 }

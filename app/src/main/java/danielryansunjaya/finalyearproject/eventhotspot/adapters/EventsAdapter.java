@@ -49,11 +49,27 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
     OnClickJoinEventListener monClickJoinEventListener;
 
 
-    public EventsAdapter(Context context, List<EventModel> eventModelList, List<String> userEventList, OnClickJoinEventListener monClickJoinEventListener) {
+    public EventsAdapter(Context context, List<EventModel> eventModelList, OnClickJoinEventListener monClickJoinEventListener) {
         this.context = context;
         this.eventModelList = eventModelList;
-        this.userEventList = userEventList;
         this.monClickJoinEventListener = monClickJoinEventListener;
+
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        rtdb = FirebaseDatabase.getInstance();
+
+        db.collection("studentsJoinEvents")
+                .document(Objects.requireNonNull(auth.getUid()))
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            userEventList = (List<String>) documentSnapshot.get("eventList");
+                        }
+                    }
+                });
     }
 
     @NonNull
@@ -76,25 +92,19 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.elePoint.setText("Ele Point\n"+ eventModelList.get(position).getElePoint());
         holder.location.setText("Block "+eventModelList.get(position).getLocation());
 
-        /*db.collection("studentsJoinEvents")
-                .document(Objects.requireNonNull(auth.getUid()))
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        DocumentSnapshot documentSnapshot = task.getResult();
-                        eventList = (List<String>) documentSnapshot.get("eventList");
-                    }
-                });
-        Log.d(TAG, String.valueOf(eventList));*/
-
-        if(userEventList.contains(eventModelList.get(position).getTitle())){
-            holder.joinBtn.setText("Joined!");
-            holder.joinBtn.setClickable(false);
+        if(userEventList!=null){
+            if(userEventList.contains(eventModelList.get(position).getTitle())){
+                holder.elePoint.setText("Ele Point\n"+ eventModelList.get(position).getElePoint()+"\nYou Have Joined!");
+                holder.joinBtn.setVisibility(View.INVISIBLE);
+            }else{
+                holder.elePoint.setText("Ele Point\n"+ eventModelList.get(position).getElePoint());
+                holder.joinBtn.setVisibility(View.VISIBLE);
+            }
         }
 
         holder.cardView.startAnimation(AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.event_card_view_anim));
-
+        Log.d(TAG, eventModelList.get(position).getTitle());
+        Log.d(TAG, String.valueOf(userEventList));
     }
 
 
@@ -126,8 +136,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             location = itemView.findViewById(R.id.location_text);
             elePoint = itemView.findViewById(R.id.elePoint_text);
             joinBtn = itemView.findViewById(R.id.joinBtn);
-
-            Log.d(TAG, String.valueOf(userEventList));
 
             joinBtn.setOnClickListener(this);
 

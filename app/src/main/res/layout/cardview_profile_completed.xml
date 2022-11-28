@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/card_view_profile"
+    android:id="@+id/card_view_profile_completed"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -16,7 +16,7 @@
         android:padding="8dp">
 
         <TextView
-            android:id="@+id/title_text"
+            android:id="@+id/title_text_completed"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -30,7 +30,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/linearLayout_completed"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -38,13 +38,13 @@
             android:layout_marginEnd="4dp"
             android:orientation="vertical"
             android:padding="5dp"
-            app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+            app:layout_constraintEnd_toStartOf="@+id/linearLayout2_completed"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title_text">
+            app:layout_constraintTop_toBottomOf="@+id/title_text_completed">
 
             <TextView
-                android:id="@+id/date_text"
+                android:id="@+id/date_text_completed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
@@ -53,7 +53,7 @@
                 android:textSize="10sp" />
 
             <TextView
-                android:id="@+id/time_text"
+                android:id="@+id/time_text_completed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
@@ -62,7 +62,7 @@
                 android:textSize="10sp" />
 
             <TextView
-                android:id="@+id/location_text"
+                android:id="@+id/location_text_completed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Block A"
@@ -72,18 +72,18 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linearLayout2"
+            android:id="@+id/linearLayout2_completed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:orientation="vertical"
             android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout_completed"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/linearLayout">
+            app:layout_constraintTop_toTopOf="@+id/linearLayout_completed">
 
             <TextView
-                android:id="@+id/elePoint_text"
+                android:id="@+id/elePoint_text_completed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -95,29 +95,29 @@
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/additionalInfoLayout"
+            android:id="@+id/additionalInfoLayout_completed"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:orientation="horizontal"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@+id/title_text"
-            app:layout_constraintStart_toStartOf="@+id/linearLayout"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+            app:layout_constraintEnd_toEndOf="@+id/title_text_completed"
+            app:layout_constraintStart_toStartOf="@+id/linearLayout_completed"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout_completed">
 
             <LinearLayout
-                android:id="@+id/linearLayout3"
+                android:id="@+id/linearLayout3_completed"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:orientation="vertical"
                 android:padding="5dp"
-                app:layout_constraintEnd_toStartOf="@+id/cancelBtn"
+                app:layout_constraintEnd_toStartOf="@+id/fillReportBtn_completed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/organizer_text"
+                    android:id="@+id/organizer_text_completed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
@@ -125,7 +125,7 @@
                     android:textSize="10sp" />
 
                 <TextView
-                    android:id="@+id/pic_text"
+                    android:id="@+id/pic_text_completed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
@@ -133,7 +133,7 @@
                     android:textSize="10sp" />
 
                 <TextView
-                    android:id="@+id/picEmail_text"
+                    android:id="@+id/picEmail_text_completed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
@@ -143,24 +143,13 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/cancelBtn"
+                android:id="@+id/fillReportBtn_completed"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_gravity="center_vertical"
-                android:text="Cancel"
+                android:text="Submit Report"
                 android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout3"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <Button
-                android:id="@+id/fillFormBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_gravity="center_vertical"
-                android:text="Fill Form"
-                android:textSize="10sp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout3"
+                app:layout_constraintBottom_toBottomOf="@+id/linearLayout3_completed"
                 app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

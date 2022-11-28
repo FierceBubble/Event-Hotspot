@@ -191,4 +191,8 @@
         motion:constraintSetStart="@+id/show_event_list"
         motion:constraintSetEnd="@+id/end"
         motion:motionInterpolator="easeInOut" />
+    <Transition
+        android:id="@+id/main_logout"
+        motion:constraintSetStart="@+id/end"
+        motion:constraintSetEnd="@+id/start" />
 </MotionScene>
