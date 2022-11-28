@@ -22,6 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:padding="5dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toStartOf="@+id/editProfileBtn"
         app:layout_constraintStart_toEndOf="@+id/imageView"
@@ -99,7 +100,8 @@
             android:id="@+id/userRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="8dp" />
+            android:padding="8dp"
+            android:background="@drawable/profilepage_bg"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

@@ -12,7 +12,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="#001844">
 
         <TextView
             android:id="@+id/title_text"
@@ -25,6 +26,7 @@
             android:textSize="14sp"
             android:textStyle="bold|italic"
             android:padding="5dp"
+            android:textColor="#FFFFFF"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -50,7 +52,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:text="Organizer"
-                android:textSize="10sp" />
+                android:textSize="10sp"
+                android:textColor="#B0E7FD"/>
 
             <TextView
                 android:id="@+id/pic_text"
@@ -58,7 +61,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:text="PIC"
-                android:textSize="10sp" />
+                android:textSize="10sp"
+                android:textColor="#B0E7FD"/>
 
             <TextView
                 android:id="@+id/picEmail_text"
@@ -66,7 +70,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:text="Email"
-                android:textSize="10sp" />
+                android:textSize="10sp"
+                android:textColor="#B0E7FD"/>
 
 
             <TextView
@@ -76,7 +81,8 @@
                 android:layout_marginRight="4dp"
                 android:layout_marginBottom="4dp"
                 android:text="10 October 2023"
-                android:textSize="10sp" />
+                android:textSize="10sp"
+                android:textColor="#B0E7FD"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -90,14 +96,16 @@
                     android:layout_gravity="center_horizontal"
                     android:text="10:00am - 03:00pm"
                     android:textSize="10sp"
-                    android:layout_marginRight="10dp"/>
+                    android:layout_marginRight="10dp"
+                    android:textColor="#B0E7FD"/>
 
                 <TextView
                     android:id="@+id/location_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Block A"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:textColor="#B0E7FD"/>
             </LinearLayout>
 
 
@@ -122,7 +130,8 @@
                 android:text="22"
                 android:textAlignment="center"
                 android:textSize="10sp"
-                tools:textSize="16sp" />
+                tools:textSize="16sp"
+                android:textColor="#B0E7FD"/>
 
             <Button
                 android:id="@+id/joinBtn"
