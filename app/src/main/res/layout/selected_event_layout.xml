@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="24dp"
+    android:paddingTop="32dp"
+    android:paddingRight="24dp"
+    android:paddingBottom="32dp">
+
+    <ImageView
+        android:id="@+id/eventSelect_cancel_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_cancel_24"
+        android:layout_gravity="right"
+        android:clickable="true"/>
+
+    <TextView
+        android:id="@+id/eventSelect_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:text="Event Name"
+        android:textColor="@color/dialog_text_and_highlight_blue"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/eventSelect_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Event Details"
+        android:textSize="12sp"
+        android:lineSpacingExtra="3sp"
+        android:background="@drawable/field_selector"
+        android:padding="5dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_marginBottom="40dp"
+        android:textColor="@color/dialog_text_and_highlight_blue"/>
+
+    <RelativeLayout
+        android:id="@+id/eventSelect_dialog_button_layout"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/blue_btn_bckg_ripple"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/eventSelect_dialog_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Join Event"
+            android:textColor="@color/main_activity_text_and_highlight_blue"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/eventSelect_dialog_button_animation_loading"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/loading" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/eventSelect_dialog_button_animation_check"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="false"
+            app:lottie_rawRes="@raw/check" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/eventSelect_dialog_button_animation_cross"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="false"
+            app:lottie_rawRes="@raw/cross" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

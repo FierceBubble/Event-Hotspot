@@ -26,8 +26,12 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,8 +40,11 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
@@ -60,16 +67,21 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import danielryansunjaya.finalyearproject.eventhotspot.models.EventModel;
 import danielryansunjaya.finalyearproject.eventhotspot.models.UserModel;
 import danielryansunjaya.finalyearproject.eventhotspot.ui.EventFragment;
 import danielryansunjaya.finalyearproject.eventhotspot.ui.ProfileFragment;
@@ -86,19 +98,28 @@ public class MainActivity extends AppCompatActivity{
     FirebaseFirestore db;
     FirebaseDatabase rtDB;
     FirebaseStorage storage;
-    TextView signupText, login_btn_text, forgotPass_text;
+    TextView signupText, login_btn_text, forgotPass_text, eventSelect_title, eventSelect_details;
     EditText insertEmail, insertPassword, insertID_forgotPass;
     LinearLayout listAllEventBtn, profileBtn, mapBtn;
     MotionLayout main_motionLayout, user_main_layout;
-    LinearLayout loginLayout, fragmentContainer, fragmentContainer_Profile;
+    LinearLayout loginLayout, fragmentContainer, fragmentContainer_Profile, dropDown_layout;
     ConstraintLayout mainLayout;
-    RelativeLayout login_btn_layout, forgot_btn_layout;
+    RelativeLayout login_btn_layout, forgot_btn_layout, eventSelect_join_btn;
     LottieAnimationView login_btn_animation_loading, login_btn_animation_check,
             login_btn_animation_cross, forgot_btn_animation_loading,
-            forgot_btn_animation_check, forgot_btn_animation_cross ;
+            forgot_btn_animation_check, forgot_btn_animation_cross,
+            eventSelect_btn_animation_loading, eventSelect_btn_animation_check,
+            eventSelect_btn_animation_cross;
 
     CircleImageView profile_picture_main, profile_picture_fragment,
             logout_btn, user_profile_menu;
+
+    ArrayList<EventModel> event_list_eventModellist;
+    ArrayList<String> event_list;
+    AutoCompleteTextView autoCompleteTextView;
+    TextInputLayout textInputLayout;
+    ArrayAdapter<String> arrayAdapter;
+
 
     @Nullable private ObjectAnimator rotateAnimation = null;
     private Vector3 modelScale = new Vector3(0.3f,0.3f,0.3f);
@@ -310,6 +331,10 @@ public class MainActivity extends AppCompatActivity{
                 startAnimation();
             }
         });
+
+        autoCompleteTextView = findViewById(R.id.dropdown_list);
+        textInputLayout = findViewById(R.id.dropdown_textInputLayout);
+        dropDown_layout = findViewById(R.id.dropdown_Layout);
     }
 
     private void initModels() {
@@ -462,7 +487,98 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void nodeTap(String name, Node parent, Vector3 infoCardPosition) {
-        WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
+        textInputLayout.setEnabled(true);
+        autoCompleteTextView.setText("");
+        textInputLayout.setHint(name);
+
+        String slice_name = name.replaceAll("Block ","");
+        event_list = new ArrayList<>();
+        event_list_eventModellist = new ArrayList<>();
+        db.collection("eventList").whereEqualTo("location", slice_name)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(QueryDocumentSnapshot document: task.getResult()){
+                                EventModel selectEvent_eventModel = document.toObject(EventModel.class);
+                                event_list.add(selectEvent_eventModel.getTitle());
+                                event_list_eventModellist.add(selectEvent_eventModel);
+                            }
+
+
+                            arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.list_event_item_dropdown, event_list);
+                            autoCompleteTextView.setAdapter(arrayAdapter);
+                            autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @SuppressLint("SetTextI18n")
+                                @Override
+                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                                    final View customLayout = getLayoutInflater().inflate(R.layout.selected_event_layout, null);
+                                    builder.setView(customLayout);
+
+                                    AlertDialog event_dialog = builder.create();
+                                    event_dialog.getWindow().setBackgroundDrawableResource(R.drawable.eventselect_dialog_layout_bckg);
+                                    event_dialog.show();
+
+                                    TextView join_text = customLayout.findViewById(R.id.eventSelect_dialog_button_text);
+
+                                    eventSelect_title = customLayout.findViewById(R.id.eventSelect_title);
+                                    eventSelect_details = customLayout.findViewById(R.id.eventSelect_description);
+                                    eventSelect_btn_animation_loading = customLayout.findViewById(R.id.eventSelect_dialog_button_animation_loading);
+                                    eventSelect_btn_animation_check = customLayout.findViewById(R.id.eventSelect_dialog_button_animation_check);
+                                    eventSelect_btn_animation_cross = customLayout.findViewById(R.id.eventSelect_dialog_button_animation_cross);
+                                    eventSelect_join_btn = customLayout.findViewById(R.id.eventSelect_dialog_button_layout);
+                                    eventSelect_join_btn.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            joinEvent_FromDropDown(event_list_eventModellist.get(i));
+                                            event_dialog.dismiss();
+                                        }
+                                    });
+
+                                    ImageView eventSelect_cancel_btn = customLayout.findViewById(R.id.eventSelect_cancel_btn);
+                                    eventSelect_cancel_btn.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            event_dialog.dismiss();
+                                        }
+                                    });
+
+                                    db.collection("studentsJoinEvents")
+                                            .document(auth.getUid())
+                                            .get()
+                                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                    if(task.isSuccessful()){
+                                                        DocumentSnapshot documentSnapshot = task.getResult();
+                                                        List<String> userEventList = (List<String>) documentSnapshot.get("eventList");
+
+                                                        if(userEventList.contains(adapterView.getItemAtPosition(i).toString())){
+                                                            eventSelect_join_btn.setClickable(false);
+                                                            join_text.setText("You Already Joined!");
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                    eventSelect_title.setText(event_list_eventModellist.get(i).getTitle());
+                                    eventSelect_details.setText("Organizer: "+event_list_eventModellist.get(i).getOrganizer()+"\n"
+                                                                +"PIC: "+event_list_eventModellist.get(i).getPic()+"\n"
+                                                                +event_list_eventModellist.get(i).getEmail()+"\n\n"
+                                                                +event_list_eventModellist.get(i).getDate()+"\n"
+                                                                +event_list_eventModellist.get(i).getTime()+"\n"
+                                                                +"Block "+event_list_eventModellist.get(i).getLocation()+"\n"
+                                                                +"Ele Points: "+event_list_eventModellist.get(i).getElePoint());
+
+                                }
+                            });
+                        }
+                    }
+                });
+
+        /*WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         String nameTrim = name.replace("Block","").trim();
         Log.d(TAG+" [Node Tapped]", "Node "+nameTrim+" Tap!");
         totalEvent = 0;
@@ -507,10 +623,130 @@ public class MainActivity extends AppCompatActivity{
                 .exceptionally(
                         (throwable) -> {
                             throw new AssertionError("Could not load plane card view.", throwable);
-                        });
+                        });*/
     }
 
-    private void buttonCLick(String name) {
+    private void joinEvent_FromDropDown(EventModel selectedEvent_eventModel){
+        // Creating a hashmap to structure the data
+        HashMap<String, Object> eventInfo=new HashMap<>();
+
+        eventInfo.put("title", selectedEvent_eventModel.getTitle());
+        eventInfo.put("organizer", selectedEvent_eventModel.getOrganizer());
+        eventInfo.put("pic", selectedEvent_eventModel.getPic());
+        eventInfo.put("email", selectedEvent_eventModel.getEmail());
+        eventInfo.put("date", selectedEvent_eventModel.getDate());
+        eventInfo.put("time", selectedEvent_eventModel.getTime());
+        eventInfo.put("elePoint", selectedEvent_eventModel.getElePoint());
+        eventInfo.put("location", selectedEvent_eventModel.getLocation());
+        eventInfo.put("attended", false);
+        eventInfo.put("completed", false);
+
+        // Inserting event informations to "joinedEventList" collection
+        db.collection("studentsJoinEvents")
+                .document(Objects.requireNonNull(auth.getUid()))
+                .collection("joinedEventList")
+                .document(selectedEvent_eventModel.getTitle())
+                .set(eventInfo)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.i(TAG+" [addEventToProfile]","Successfully added/updated new event to joinEventList!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i(TAG+" [addEventToProfile]","Failed to added/updated new event to joinEventList!");
+                    }
+                });
+
+        // Update array "eventList"
+        db.collection("studentsJoinEvents")
+                .document(auth.getUid())
+                .collection("joinedEventList")
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            List<String> event = new ArrayList<>();
+                            for(QueryDocumentSnapshot document: task.getResult()){
+                                EventModel eventModel = document.toObject(EventModel.class);
+                                event.add(eventModel.getTitle());
+                            }
+
+                            HashMap<String, Object> hashEvent = new HashMap<>();
+                            hashEvent.put("eventList", event);
+                            db.collection("studentsJoinEvents")
+                                    .document(auth.getUid())
+                                    .set(hashEvent)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Log.i(TAG+" [addEventToProfile]","EventList array is successfully added/updated!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i(TAG+" [addEventToProfile]","Failed to added/updated eventList array!");
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(MainActivity.this, "Error"+task.getException(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        sendEmailNotif(selectedEvent_eventModel.getTitle());
+
+        if(!selectedEvent_eventModel.getEmail().isEmpty() && selectedEvent_eventModel.getEmail().contains("https")){
+            // Open link for Registration
+            Uri uri = Uri.parse(selectedEvent_eventModel.getEmail());
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }else if (!selectedEvent_eventModel.getEmail().isEmpty() && selectedEvent_eventModel.getEmail().contains("@")){
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("plain/text");
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[] { selectedEvent_eventModel.getEmail() });
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Request to join " + selectedEvent_eventModel.getTitle());
+            intent.putExtra(Intent.EXTRA_TEXT, "I want to join this Event!");
+            startActivity(intent);
+        }
+
+        Toast.makeText(MainActivity.this,"Event Joined!",Toast.LENGTH_SHORT).show();
+    }
+
+    private void sendEmailNotif(String title){
+        rtDB.getReference()
+                .child("login")
+                .child(Objects.requireNonNull(auth.getUid()))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        UserModel userModel = snapshot.getValue(UserModel.class);
+                        assert userModel != null;
+                        String sName = userModel.getName();
+                        String sID = userModel.getStudentID();
+                        String sEmail = userModel.getEmail();
+
+                        String subject = "Successfully join "+title+"!";
+                        String message = "Dear "+sName+" - ("+sID+"),\n"+"Your request to joining ["+title+"] event has been confirmed!";
+
+                        JavaMailAPI javaMailAPI = new JavaMailAPI(MainActivity.this, sEmail, subject, message);
+                        javaMailAPI.execute();
+                        Log.i(TAG+" [sendEmailNotif]","Successfully send email notification for the joined event!");
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.i(TAG+" [sendEmailNotif]","Failed send email notification for the joined event!");
+                        throw error.toException();
+                    }
+                });
+    }
+
+    /*private void buttonCLick(String name) {
         Toast.makeText(this,"Button "+name+" Clicked!",Toast.LENGTH_LONG).show();
     }
 
@@ -523,7 +759,7 @@ public class MainActivity extends AppCompatActivity{
         infoCard.setLocalScale(modelScale);
         infoCard.setLocalPosition(infoCardPosition);
         Log.d(TAG+" [make_infoCard]", "InfoCard "+name+" Created!");
-    }
+    }*/
 
     private void startAnimation(){
         if(rotateAnimation != null){

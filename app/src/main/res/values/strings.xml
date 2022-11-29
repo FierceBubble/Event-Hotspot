@@ -12,4 +12,7 @@
 
     <!-- SIgnIn Layout Strings-->
 
+
+    <!-- Event Dropdown Strings-->
+    <string name="select_event">Click a Building!</string>
 </resources>
