@@ -29,7 +29,6 @@ import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -53,7 +52,6 @@ import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.QuaternionEvaluator;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
-import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.FootprintSelectionVisualizer;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.TransformationSystem;
@@ -61,7 +59,6 @@ import com.google.ar.sceneform.ux.TransformationSystem;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -98,19 +95,22 @@ public class MainActivity extends AppCompatActivity{
     FirebaseFirestore db;
     FirebaseDatabase rtDB;
     FirebaseStorage storage;
-    TextView signupText, login_btn_text, forgotPass_text, eventSelect_title, eventSelect_details;
+
+    TextView signupText, login_btn_text, forgotPass_text,
+            eventSelect_title, eventSelect_details;
     EditText insertEmail, insertPassword, insertID_forgotPass;
-    LinearLayout listAllEventBtn, profileBtn, mapBtn;
+
     MotionLayout main_motionLayout, user_main_layout;
-    LinearLayout loginLayout, fragmentContainer, fragmentContainer_Profile, dropDown_layout;
+    LinearLayout listAllEventBtn, profileBtn, mapBtn, loginLayout,
+            fragmentContainer, fragmentContainer_Profile, dropDown_layout;
     ConstraintLayout mainLayout;
     RelativeLayout login_btn_layout, forgot_btn_layout, eventSelect_join_btn;
+
     LottieAnimationView login_btn_animation_loading, login_btn_animation_check,
             login_btn_animation_cross, forgot_btn_animation_loading,
             forgot_btn_animation_check, forgot_btn_animation_cross,
             eventSelect_btn_animation_loading, eventSelect_btn_animation_check,
             eventSelect_btn_animation_cross;
-
     CircleImageView profile_picture_main, profile_picture_fragment,
             logout_btn, user_profile_menu;
 
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity{
 
 
     @Nullable private ObjectAnimator rotateAnimation = null;
-    private Vector3 modelScale = new Vector3(0.3f,0.3f,0.3f);
+    private final Vector3 modelScale = new Vector3(0.3f,0.3f,0.3f);
     private TransformableNode university;
     private TransformationSystem transformationSystem;
     private SceneView sceneView;
@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity{
     ModelRenderable blockC_renderable;
     ModelRenderable blockD_renderable;
     ModelRenderable blockG_renderable;
-    ViewRenderable viewRenderable;
 
     CompletableFuture<ModelRenderable> base_stage;
     CompletableFuture<ModelRenderable> blockA_stage;
@@ -142,10 +141,8 @@ public class MainActivity extends AppCompatActivity{
     CompletableFuture<ModelRenderable> blockD_stage;
     CompletableFuture<ModelRenderable> blockG_stage;
 
-    public int totalEvent;
     public boolean isLogin = false;
     public boolean isOnMap = false;
-
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -248,7 +245,6 @@ public class MainActivity extends AppCompatActivity{
             }
         });
         sceneView.getScene().getCamera().setLocalPosition(new Vector3(0,-0.5f,0.5f));
-        //sceneView.getScene().getCamera().setLocalPosition(new Vector3(0,-0.25f,0.5f));
         scene=sceneView.getScene();
         initModels();
 
@@ -259,6 +255,7 @@ public class MainActivity extends AppCompatActivity{
                 recreate();
             }
         });
+
 
         user_profile_menu = findViewById(R.id.user_profile_menu_btn);
         user_profile_menu.setOnClickListener(new View.OnClickListener() {
@@ -283,11 +280,9 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
 
-                //sceneView.setVisibility(View.INVISIBLE);
                 isOnMap = false;
                 fragmentContainer.setVisibility(View.VISIBLE);
                 fragmentContainer_Profile.setVisibility(View.INVISIBLE);
-                //user_main_layout.transitionToStart();
                 main_motionLayout.transitionToState(R.id.show_event_list);
                 new Handler().postDelayed(this::continueAnimation,TIMER);
             }
@@ -301,11 +296,9 @@ public class MainActivity extends AppCompatActivity{
         mapBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //sceneView.setVisibility(View.VISIBLE);
                 isOnMap = true;
                 fragmentContainer.setVisibility(View.INVISIBLE);
                 fragmentContainer_Profile.setVisibility(View.INVISIBLE);
-                //user_main_layout.transitionToStart();
                 main_motionLayout.transitionToState(R.id.back_to_end_from_event);
             }
 
@@ -317,11 +310,9 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
 
-                //sceneView.setVisibility(View.INVISIBLE);
                 isOnMap = false;
                 fragmentContainer.setVisibility(View.INVISIBLE);
                 fragmentContainer_Profile.setVisibility(View.VISIBLE);
-                //user_main_layout.transitionToStart();
                 main_motionLayout.transitionToState(R.id.show_profile_page);
 
                 new Handler().postDelayed(this::continueAnimation,TIMER);
@@ -396,13 +387,15 @@ public class MainActivity extends AppCompatActivity{
                     }
                     return null;
                 });
+
         Log.d(TAG+" loadModels", "Model Successfully Loaded!");
     }
 
     private void createBuildingNode(String name, ModelRenderable modelRenderable, CompletableFuture<ModelRenderable> stage, Vector3 infoCardPosition){
-        stage.thenAccept(model->{
-           addOtherNodetoUniversity(name, modelRenderable, infoCardPosition);
+        stage.thenAccept(model-> {
+           addOtherNodetoUniversity(name, modelRenderable);
         });
+
         Log.d(TAG+" [createBuildingNode]", "Building "+name+" Added to Base!");
     }
 
@@ -429,7 +422,6 @@ public class MainActivity extends AppCompatActivity{
                 return false;
             }
         });
-        //createBuilding("Block A", blockA_renderable, blockA_stage, new Vector3(0.23f, 0.2f, -0.6f));
 
         transformationSystem.selectNode(university);
         scene.addChild(university);
@@ -437,17 +429,6 @@ public class MainActivity extends AppCompatActivity{
         startAnimation();
     }
 
-    /*private Node createBuilding(String name, ModelRenderable modelRenderable, CompletableFuture<ModelRenderable> stage, Vector3 infoCardPosition){
-        BuildingNode node = new BuildingNode(modelRenderable, stage, name, infoCardPosition, this);
-        node.setParent(university);
-        node.setRenderable(modelRenderable);
-        node.setName(name);
-        node.setLocalRotation(Quaternion.multiply(
-                Quaternion.axisAngle(new Vector3(0.5f, 0f, 0f), 50),
-                Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 170)));
-
-        return node;
-    }*/
 
     private static ObjectAnimator createAnimator() {
         Quaternion orientation1 = Quaternion.axisAngle(new Vector3(0f, 1.0f, 0.0f), 0);
@@ -466,7 +447,7 @@ public class MainActivity extends AppCompatActivity{
         return  rotateAnimation;
     }
 
-    private void addOtherNodetoUniversity(String name, ModelRenderable modelRenderable, Vector3 infoCardPosition){
+    private void addOtherNodetoUniversity(String name, ModelRenderable modelRenderable){
         Node otherBuilding = new Node();
         otherBuilding.setParent(university);
         otherBuilding.setRenderable(modelRenderable);
@@ -478,15 +459,15 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
                 if(isLogin && isOnMap){
-                    nodeTap(name, otherBuilding, infoCardPosition);
+                    nodeTap(name);
                 }
             }
         });
-        //university.addChild(otherBuilding);
+
         Log.d(TAG+" [addOtherNodetoUniversity]", "Building "+name+" Rendered!");
     }
 
-    private void nodeTap(String name, Node parent, Vector3 infoCardPosition) {
+    private void nodeTap(String name) {
         textInputLayout.setEnabled(true);
         autoCompleteTextView.setText("");
         textInputLayout.setHint(name);
@@ -506,8 +487,7 @@ public class MainActivity extends AppCompatActivity{
                                 event_list_eventModellist.add(selectEvent_eventModel);
                             }
 
-
-                            arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.list_event_item_dropdown, event_list);
+                            arrayAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.list_event_item_dropdown, event_list);
                             autoCompleteTextView.setAdapter(arrayAdapter);
                             autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @SuppressLint("SetTextI18n")
@@ -547,7 +527,7 @@ public class MainActivity extends AppCompatActivity{
                                     });
 
                                     db.collection("studentsJoinEvents")
-                                            .document(auth.getUid())
+                                            .document(Objects.requireNonNull(auth.getUid()))
                                             .get()
                                             .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                 @Override
@@ -556,6 +536,7 @@ public class MainActivity extends AppCompatActivity{
                                                         DocumentSnapshot documentSnapshot = task.getResult();
                                                         List<String> userEventList = (List<String>) documentSnapshot.get("eventList");
 
+                                                        assert userEventList != null;
                                                         if(userEventList.contains(adapterView.getItemAtPosition(i).toString())){
                                                             eventSelect_join_btn.setClickable(false);
                                                             join_text.setText("You Already Joined!");
@@ -563,6 +544,7 @@ public class MainActivity extends AppCompatActivity{
                                                     }
                                                 }
                                             });
+
                                     eventSelect_title.setText(event_list_eventModellist.get(i).getTitle());
                                     eventSelect_details.setText("Organizer: "+event_list_eventModellist.get(i).getOrganizer()+"\n"
                                                                 +"PIC: "+event_list_eventModellist.get(i).getPic()+"\n"
@@ -578,55 +560,10 @@ public class MainActivity extends AppCompatActivity{
                     }
                 });
 
-        /*WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
-        String nameTrim = name.replace("Block","").trim();
-        Log.d(TAG+" [Node Tapped]", "Node "+nameTrim+" Tap!");
-        totalEvent = 0;
-
-        ViewRenderable.builder()
-                .setView(this, R.layout.building_options)
-                .build()
-                .thenAccept(
-                        (viewRenderable) -> {
-                            MainActivity activity = weakActivity.get();
-                            if(activity!=null){
-                                TextView building_name = (TextView) viewRenderable.getView().findViewById(R.id.infoCard_text);
-                                Button button = (Button) viewRenderable.getView().findViewById(R.id.infoCard_btn);
-                                button.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        buttonCLick(name);
-                                    }
-                                });
-
-                                db.collection("eventList")
-                                        .whereEqualTo("location", nameTrim)
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                if (task.isSuccessful()){
-                                                    for(QueryDocumentSnapshot documentSnapshot : task.getResult()){
-                                                        totalEvent+=1;
-                                                    }
-                                                    building_name.setText(name+" - Event Total: "+totalEvent);
-                                                }else{
-                                                    Log.w(TAG+" [FirebaseStore_RetrieveData]", "Error getting documents.", task.getException());
-                                                }
-                                            }
-                                        });
-
-                                activity.viewRenderable = viewRenderable;
-                                make_infoCard(name, parent, viewRenderable, infoCardPosition);
-                            }
-                        })
-                .exceptionally(
-                        (throwable) -> {
-                            throw new AssertionError("Could not load plane card view.", throwable);
-                        });*/
     }
 
     private void joinEvent_FromDropDown(EventModel selectedEvent_eventModel){
+
         // Creating a hashmap to structure the data
         HashMap<String, Object> eventInfo=new HashMap<>();
 
@@ -691,6 +628,7 @@ public class MainActivity extends AppCompatActivity{
                                             Log.i(TAG+" [addEventToProfile]","Failed to added/updated eventList array!");
                                         }
                                     });
+
                         } else {
                             Toast.makeText(MainActivity.this, "Error"+task.getException(), Toast.LENGTH_SHORT).show();
                         }
@@ -746,20 +684,6 @@ public class MainActivity extends AppCompatActivity{
                 });
     }
 
-    /*private void buttonCLick(String name) {
-        Toast.makeText(this,"Button "+name+" Clicked!",Toast.LENGTH_LONG).show();
-    }
-
-    private void make_infoCard(String name, Node parent, ViewRenderable viewRenderable, Vector3 infoCardPosition){
-        Node infoCard = new Node();
-        infoCard.setRenderable(viewRenderable);
-        infoCard.setEnabled(true);
-        infoCard.setParent(parent);
-        infoCard.setName("InfoCard: "+name);
-        infoCard.setLocalScale(modelScale);
-        infoCard.setLocalPosition(infoCardPosition);
-        Log.d(TAG+" [make_infoCard]", "InfoCard "+name+" Created!");
-    }*/
 
     private void startAnimation(){
         if(rotateAnimation != null){
@@ -781,6 +705,7 @@ public class MainActivity extends AppCompatActivity{
         rotateAnimation = null;
         Log.d(TAG+" [Rotate Animation]", "Animation Stopped!");
     }
+
 
     private Boolean noEmptyField(){
         email = insertEmail.getText().toString() + "@ucsiuniversity.edu.my";
@@ -900,6 +825,7 @@ public class MainActivity extends AppCompatActivity{
                         Log.d(TAG+"[Alert Dialog]","Error: "+error.getMessage());
                     }
                 };
+
                 query.addListenerForSingleValueEvent(valueEventListener);
 
             }
