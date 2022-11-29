@@ -536,7 +536,6 @@ public class MainActivity extends AppCompatActivity{
                                                         DocumentSnapshot documentSnapshot = task.getResult();
                                                         List<String> userEventList = (List<String>) documentSnapshot.get("eventList");
 
-                                                        assert userEventList != null;
                                                         if(userEventList.contains(adapterView.getItemAtPosition(i).toString())){
                                                             eventSelect_join_btn.setClickable(false);
                                                             join_text.setText("You Already Joined!");
