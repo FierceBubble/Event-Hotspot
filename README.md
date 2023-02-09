@@ -1,3 +1,2 @@
 # Event Hotspot Management System
-This is a final year project for my Bachelor in Computer Science (Hons) Mobile Computing and Networking. 
-Event Hotspot Management System 
+Using SceneView API to display a 3D object model into mobile application such as 3D model of a building
